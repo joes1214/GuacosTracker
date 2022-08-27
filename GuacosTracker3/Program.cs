@@ -10,7 +10,7 @@ builder.Services.AddDbContext<TrackerDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-builder.Services.AddDefaultIdentity<TrackerUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<TrackerUser>(options => options.SignIn.RequireConfirmedAccount = false) //used to check confirmation email
     .AddEntityFrameworkStores<TrackerDbContext>();
 
 // Add services to the container.

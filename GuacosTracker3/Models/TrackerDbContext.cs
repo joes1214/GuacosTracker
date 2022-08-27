@@ -2,6 +2,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using GuacosTracker3.Areas.Identity.Data;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GuacosTracker3.Data
 {
@@ -16,12 +18,22 @@ namespace GuacosTracker3.Data
         public virtual DbSet<Notes> Notes { get; set; }
         public virtual DbSet<Ticket> Ticket { get; set; }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<Ticket>().HasMany(m => m.CustomerId);
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
-        //}
+            builder.ApplyConfiguration(new ApplicationUserConfiguration());
+        }
 
-        
+    }
+
+    public class ApplicationUserConfiguration : IEntityTypeConfiguration<TrackerUser>
+    {
+        public void Configure(EntityTypeBuilder<TrackerUser> builder)
+        {
+            builder.Property(u => u.FName).HasMaxLength(100);
+            builder.Property(u => u.LName).HasMaxLength(100);
+
+        }
     }
 }

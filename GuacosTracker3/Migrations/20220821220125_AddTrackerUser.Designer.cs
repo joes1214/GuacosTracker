@@ -4,6 +4,7 @@ using GuacosTracker3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuacosTracker3.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    partial class TrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220821220125_AddTrackerUser")]
+    partial class AddTrackerUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,14 +33,17 @@ namespace GuacosTracker3.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("AltPhone")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -84,6 +89,8 @@ namespace GuacosTracker3.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TicketId");
+
                     b.ToTable("Notes");
                 });
 
@@ -107,9 +114,6 @@ namespace GuacosTracker3.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("NotesId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("Priority")
                         .HasColumnType("bit");
 
@@ -123,8 +127,6 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("NotesId");
 
                     b.ToTable("Ticket");
                 });
@@ -356,9 +358,11 @@ namespace GuacosTracker3.Migrations
 
             modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
                 {
-                    b.HasOne("GuacosTracker3.Models.Notes", null)
-                        .WithMany("Ticket")
-                        .HasForeignKey("NotesId");
+                    b.HasOne("GuacosTracker3.Models.Ticket", null)
+                        .WithMany("Notes")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -412,9 +416,9 @@ namespace GuacosTracker3.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
                 {
-                    b.Navigation("Ticket");
+                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }
