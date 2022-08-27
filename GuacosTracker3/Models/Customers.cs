@@ -24,7 +24,7 @@ namespace GuacosTracker3.Models
 
         [Column(TypeName = "nvarchar(150)")]
         [MaxLength(100, ErrorMessage = "Too many characters! Max 150.")]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         [Required]
         [Display(Name = "Primary Phone Number")]
@@ -37,11 +37,12 @@ namespace GuacosTracker3.Models
         [Column(TypeName = "nvarchar(10)")]
         [MaxLength(10, ErrorMessage = "Too many characters! Max 10.")]
         [MinLength(10, ErrorMessage = "Invalid Phone Number")]
-        public string AltPhone { get; set; }
+        public string? AltPhone { get; set; }
 
         [Display(Name = "Email Address")]
         [Column(TypeName = "nvarchar(100)")]
         [MaxLength(100, ErrorMessage = "Too many characters! Max 100.")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
+
     }
 }
