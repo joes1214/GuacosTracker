@@ -46,17 +46,25 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets/Create
-        public IActionResult Create()
+        [HttpPost]
+        [Route("Tickets/Create/{Id}")]
+        public IActionResult Create(int Id = 0)
         {
+            if (Id == 0)
+            {
+                return Redirect("Customer/Index");
+            }
+            ViewBag.CustomerId = Id;
             return View();
         }
+
 
         // POST: Tickets/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CustomerId,Title,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> CreateTicket([Bind("Id,CustomerId,Title,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {

@@ -27,8 +27,13 @@ namespace GuacosTracker3.Models
         [MinLength(10, ErrorMessage = "Please write a short description!")]
         public string Description { get; set; }
 
+        
+
         [Required]
         public DateTime Date { get; set; } = DateTime.Now;
+
+        public ICollection<Ticket> Ticket { get; set; }
+
 
     }
 }

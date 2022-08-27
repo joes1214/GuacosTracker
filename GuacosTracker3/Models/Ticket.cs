@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GuacosTracker3.Models
@@ -10,7 +11,7 @@ namespace GuacosTracker3.Models
         [Display(Name = "Ticket ID")]
         public Guid Id { get; set; }
 
-        [Required]
+        [BindProperty]
         [ForeignKey("Customers")]
         [Display(Name = "Customer ID")]
         public int CustomerId { get; set; }
@@ -43,7 +44,5 @@ namespace GuacosTracker3.Models
         [Display(Name = "Priority?")]
         public bool Priority { get; set; } = false;
 
-        //Notes Relationship
-        public virtual ICollection<Notes> Notes { get; set; }
     }
 }
