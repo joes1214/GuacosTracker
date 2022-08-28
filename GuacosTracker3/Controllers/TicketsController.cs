@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
+using GuacosTracker3.SharedData;
 
 namespace GuacosTracker3.Controllers
 {
@@ -48,12 +49,16 @@ namespace GuacosTracker3.Controllers
         // GET: Tickets/Create
         [HttpPost]
         [Route("Tickets/Create/{Id}")]
-        public IActionResult Create(int Id = 0)
+        /*
+         * I have no idea why the routing for Tickets/Create/ will send you to Page Not Found. Maybe I'll figure it out?
+         */
+        public IActionResult Create(int? Id = 0)
         {
-            if (Id == 0)
+            if (Id == 0 || Id == null)
             {
                 return Redirect("Customer/Index");
             }
+
             ViewBag.CustomerId = Id;
             return View();
         }
@@ -62,18 +67,19 @@ namespace GuacosTracker3.Controllers
         // POST: Tickets/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("CreateTicket")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTicket([Bind("Id,CustomerId,Title,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
                 ticket.Id = Guid.NewGuid();
+                ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(ticket);
+            return Redirect("/Customers/Index");
         }
 
         // GET: Tickets/Edit/5
@@ -108,6 +114,7 @@ namespace GuacosTracker3.Controllers
             {
                 try
                 {
+                    ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
@@ -124,24 +131,6 @@ namespace GuacosTracker3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(ticket);
-        }
-
-        // GET: Tickets/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null || _context.Ticket == null)
-            {
-                return NotFound();
-            }
-
-            var ticket = await _context.Ticket
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-
             return View(ticket);
         }
 
