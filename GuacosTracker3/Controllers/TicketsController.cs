@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
 using GuacosTracker3.SharedData;
+using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
@@ -31,19 +32,29 @@ namespace GuacosTracker3.Controllers
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || _context.Ticket == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var ticket = await _context.Ticket
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
+            var ticket1 = await _context.Ticket.FirstOrDefaultAsync(m => m.Id == id);
+            var notes1 = await _context.Notes.FirstOrDefaultAsync();
 
-            return View(ticket);
+            return View(new TicketNotesViewModel { Note = notes1, Ticket = ticket1 });
+
+            //if (id == null || _context.Ticket == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //var ticket = await _context.Ticket
+            //    .FirstOrDefaultAsync(m => m.Id == id);
+            //if (ticket == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return View(ticket);
         }
 
         // GET: Tickets/Create
