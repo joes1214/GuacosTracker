@@ -63,7 +63,7 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    <form method="post" asp-controller="Tickets" asp-action="Create" asp-route-id="@item.Id">
+                    <form method="get" asp-controller="Tickets" asp-action="Create" asp-route-id="@item.Id">
                         <input type="submit" value="Create" class="btn btn-primary" />
 
                     </form>

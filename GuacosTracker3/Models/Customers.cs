@@ -7,7 +7,6 @@ namespace GuacosTracker3.Models
     {
         [Key]
         [Display(Name = "Customer ID")]
-        //See how to create random IDs
         public int Id { get; set; }
 
         [Required]
@@ -43,6 +42,9 @@ namespace GuacosTracker3.Models
         [Column(TypeName = "nvarchar(100)")]
         [MaxLength(100, ErrorMessage = "Too many characters! Max 100.")]
         public string? Email { get; set; }
+
+        public ICollection<Ticket> Ticket { get; set; }
+
 
     }
 }
