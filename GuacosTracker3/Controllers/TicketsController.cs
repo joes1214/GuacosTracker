@@ -44,17 +44,17 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets/Create
-        [HttpGet]
-        public IActionResult Create(int Id = 0)
-        {
-            Customers _customer = _context.Customers.Find(Id);
+        //[HttpGet]
+        //public IActionResult Create(int Id = 0)
+        //{
+        //    Customers _customer = _context.Customers.Find(Id);
 
-            if (Id == 0 || _customer == null)
-            {
-                return RedirectToAction(actionName: "Index", controllerName: "Customers");
-            }
-            return View(TicketFactory.Create(Id, new Ticket()));
-        }
+        //    if (Id == 0 || _customer == null)
+        //    {
+        //        return RedirectToAction(actionName: "Index", controllerName: "Customers");
+        //    }
+        //    return View(TicketFactory.Create(Id, new Ticket()));
+        //}
 
 
         // POST: Tickets/Create
@@ -71,7 +71,7 @@ namespace GuacosTracker3.Controllers
                 return RedirectToAction(actionName: "Index", controllerName:"Ticket");
             }
 
-            return View(TicketFactory.Create(ticket.CustomerId, new Ticket()));
+            return View();
         }
 
         // GET: Tickets/Edit/5

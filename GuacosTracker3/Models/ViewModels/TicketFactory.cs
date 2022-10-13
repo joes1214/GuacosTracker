@@ -2,12 +2,12 @@
 {
     public static class TicketFactory
     {
-        public static TicketViewModel Create(int _custId, Ticket _ticket)
+        public static TicketViewModel Create(Customers _customers, Ticket _ticket)
         {
             return new TicketViewModel
             {
                 Tickets = _ticket,
-                CustomerId = _custId,
+                Customer = _customers,
             };
         }
     }
