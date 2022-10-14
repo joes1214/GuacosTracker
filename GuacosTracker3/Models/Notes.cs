@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GuacosTracker3.SharedData;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GuacosTracker3.Models
@@ -33,7 +34,5 @@ namespace GuacosTracker3.Models
         public DateTime Date { get; set; } = DateTime.Now;
 
         public ICollection<Ticket> Ticket { get; set; }
-
-
     }
 }

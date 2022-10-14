@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
+using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
@@ -46,9 +47,15 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Notes/Create
-        public IActionResult Create()
+
+        [Route("Notes/Create/{Id}")]
+        public IActionResult Create(Guid Id)
         {
-            return View();
+            //if (Id == null)
+            //{
+            //    return NotFound();
+            //} need to validate
+            return View(NotesCreateViewModel.Create(Id));
         }
 
         // POST: Notes/Create
@@ -56,16 +63,19 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TicketId,EmployeeId,Description,Date")] Notes notes)
+        public async Task<IActionResult> CreateNote([Bind("TicketId, Description, EmployeeId")] Notes note)
         {
             if (ModelState.IsValid)
             {
-                notes.Id = Guid.NewGuid();
-                _context.Add(notes);
+
+                note.Id = Guid.NewGuid();
+                _context.Notes.Add(note);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Tickets/Index");
             }
-            return View(notes);
+
+            
+            return RedirectToAction("Create", note.TicketId);
         }
 
         // GET: Notes/Edit/5

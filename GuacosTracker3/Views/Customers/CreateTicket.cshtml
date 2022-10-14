@@ -5,7 +5,7 @@
 @{
     ViewData["Title"] = "Create";
 }
-@*
+
 <h1>Create</h1>
 
 
@@ -14,11 +14,14 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="Tickets" asp-action="Create" asp-route-id="@Model.CustomerId">
+        <form asp-controller="Tickets" asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-md-6">
+                <h3>@Model.Customer.LName, @Model.Customer.FName</h3>
+            </div>
             <div class="form-group">
                 <label asp-for="Tickets.CustomerId" class="control-label"></label>
-                <input asp-for="Tickets.CustomerId" class="form-control" value="@Model.CustomerId" readonly/>
+                <input asp-for="Tickets.CustomerId" class="form-control" value="@Model.Customer.Id" readonly/>
                 <span asp-validation-for="Tickets.CustomerId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -26,7 +29,7 @@
                 <input asp-for="Tickets.Title" class="form-control" />
                 <span asp-validation-for="Tickets.Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group"> @*Should be automatically pulled like CustomerID*@
                 <label asp-for="Tickets.EmployeeId" class="control-label"></label>
                 <input asp-for="Tickets.EmployeeId" class="form-control" />
                 <span asp-validation-for="Tickets.EmployeeId" class="text-danger"></span>
@@ -39,7 +42,8 @@
             <div class="form-group">
                 <label asp-for="Tickets.Status" class="control-label"></label>
                 <select asp-for="Tickets.Status" class="form-control" asp-items="Html.GetEnumSelectList<StatusList>()">
-                    </select> 
+                    </select> @*for drop down for status*@
+                @*<input asp-for="Status" class="form-control" />*@
                 <span asp-validation-for="Tickets.Status" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
@@ -56,7 +60,7 @@
 
 <div>
     <a asp-controller="Customers" asp-action="Index">Back to List</a>
-</div>*@
+</div>
 
 @section Scripts {
 @{

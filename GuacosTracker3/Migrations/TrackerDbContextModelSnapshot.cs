@@ -354,7 +354,7 @@ namespace GuacosTracker3.Migrations
                     b.HasDiscriminator().HasValue("TrackerUser");
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
                 {
                     b.HasOne("GuacosTracker3.Models.Notes", null)
                         .WithMany("Ticket")

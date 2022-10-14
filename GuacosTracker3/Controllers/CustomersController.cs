@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
+using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
@@ -65,6 +66,18 @@ namespace GuacosTracker3.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(customers);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTicket(int? id)
+        {
+            if(id == null)
+            {
+                RedirectToAction(nameof(Index));
+            }
+
+            Customers _customers = _context.Customers.Find(id);
+            return View(TicketFactory.Create(_customers, new Ticket()));
         }
 
         // GET: Customers/Edit/5

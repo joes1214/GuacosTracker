@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuacosTracker3.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    [Migration("20220813040558_ModifyTrackerDbContext")]
-    partial class ModifyTrackerDbContext
+    [Migration("20221014012103_Test3Dv")]
+    partial class Test3Dv
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,17 +33,14 @@ namespace GuacosTracker3.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("AltPhone")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -89,8 +86,6 @@ namespace GuacosTracker3.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TicketId");
-
                     b.ToTable("Notes");
                 });
 
@@ -114,6 +109,9 @@ namespace GuacosTracker3.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("NotesId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("Priority")
                         .HasColumnType("bit");
 
@@ -127,6 +125,8 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("NotesId");
 
                     b.ToTable("Ticket");
                 });
@@ -195,6 +195,10 @@ namespace GuacosTracker3.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -246,6 +250,8 @@ namespace GuacosTracker3.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -333,13 +339,28 @@ namespace GuacosTracker3.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
+            modelBuilder.Entity("GuacosTracker3.Areas.Identity.Data.TrackerUser", b =>
                 {
-                    b.HasOne("GuacosTracker3.Models.Ticket", null)
-                        .WithMany("Notes")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("FName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasDiscriminator().HasValue("TrackerUser");
+                });
+
+            modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
+                {
+                    b.HasOne("GuacosTracker3.Models.Notes", null)
+                        .WithMany("Ticket")
+                        .HasForeignKey("NotesId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -393,9 +414,9 @@ namespace GuacosTracker3.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
                 {
-                    b.Navigation("Notes");
+                    b.Navigation("Ticket");
                 });
 #pragma warning restore 612, 618
         }

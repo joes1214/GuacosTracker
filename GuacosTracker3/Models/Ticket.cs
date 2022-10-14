@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GuacosTracker3.SharedData;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -43,6 +44,5 @@ namespace GuacosTracker3.Models
 
         [Display(Name = "Priority?")]
         public bool Priority { get; set; } = false;
-
     }
 }

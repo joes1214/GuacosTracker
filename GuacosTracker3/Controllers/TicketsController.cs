@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
+using GuacosTracker3.SharedData;
+using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
@@ -28,52 +30,48 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null || _context.Ticket == null)
+            Ticket _ticket = await _context.Ticket.FindAsync(id);
+
+            if (_ticket == null)
             {
                 return NotFound();
             }
 
-            var ticket = await _context.Ticket
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
 
-            return View(ticket);
-        }
-
-        // GET: Tickets/Create
-        [HttpPost]
-        [Route("Tickets/Create/{Id}")]
-        public IActionResult Create(int Id = 0)
-        {
-            if (Id == 0)
-            {
-                return Redirect("Customer/Index");
-            }
-            ViewBag.CustomerId = Id;
             return View();
         }
 
+        // GET: Tickets/Create
+        //[HttpGet]
+        //public IActionResult Create(int Id = 0)
+        //{
+        //    Customers _customer = _context.Customers.Find(Id);
+
+        //    if (Id == 0 || _customer == null)
+        //    {
+        //        return RedirectToAction(actionName: "Index", controllerName: "Customers");
+        //    }
+        //    return View(TicketFactory.Create(Id, new Ticket()));
+        //}
+
 
         // POST: Tickets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTicket([Bind("Id,CustomerId,Title,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("CustomerId,Title,EmployeeId,Description,Status,Priority")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
                 ticket.Id = Guid.NewGuid();
+                ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(actionName: "Index", controllerName:"Tickets");
             }
-            return View(ticket);
+
+            return RedirectToActionPreserveMethod(actionName:"CreateTicket", controllerName:"Customers");
         }
 
         // GET: Tickets/Edit/5
@@ -108,6 +106,7 @@ namespace GuacosTracker3.Controllers
             {
                 try
                 {
+                    ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
@@ -124,24 +123,6 @@ namespace GuacosTracker3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(ticket);
-        }
-
-        // GET: Tickets/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null || _context.Ticket == null)
-            {
-                return NotFound();
-            }
-
-            var ticket = await _context.Ticket
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-
             return View(ticket);
         }
 
