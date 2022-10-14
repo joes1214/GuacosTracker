@@ -14,7 +14,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="Tickets" asp-action="Create" asp-route-id="@Model.Customer.Id">
+        <form asp-controller="Tickets" asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="col-md-6">
                 <h3>@Model.Customer.LName, @Model.Customer.FName</h3>

@@ -45,7 +45,6 @@ namespace GuacosTracker3.Models
 
 
 
-        public ICollection<Ticket>? Ticket { get; set; }
 
     }
 }

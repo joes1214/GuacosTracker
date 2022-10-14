@@ -96,9 +96,6 @@ namespace GuacosTracker3.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CustomersId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -126,8 +123,6 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomersId");
 
                     b.HasIndex("NotesId");
 
@@ -361,10 +356,6 @@ namespace GuacosTracker3.Migrations
 
             modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
                 {
-                    b.HasOne("GuacosTracker3.Models.Customers", null)
-                        .WithMany("Ticket")
-                        .HasForeignKey("CustomersId");
-
                     b.HasOne("GuacosTracker3.Models.Notes", null)
                         .WithMany("Ticket")
                         .HasForeignKey("NotesId");
@@ -419,11 +410,6 @@ namespace GuacosTracker3.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("GuacosTracker3.Models.Customers", b =>
-                {
-                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>

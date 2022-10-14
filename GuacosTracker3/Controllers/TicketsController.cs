@@ -68,10 +68,10 @@ namespace GuacosTracker3.Controllers
                 ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(actionName: "Index", controllerName:"Ticket");
+                return RedirectToAction(actionName: "Index", controllerName:"Tickets");
             }
 
-            return View();
+            return RedirectToActionPreserveMethod(actionName:"CreateTicket", controllerName:"Customers");
         }
 
         // GET: Tickets/Edit/5
