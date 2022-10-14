@@ -12,11 +12,11 @@ using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
-    public class TicketsController : Controller
+    public class TicketController : Controller
     {
         private readonly TrackerDbContext _context;
 
-        public TicketsController(TrackerDbContext context)
+        public TicketController(TrackerDbContext context)
         {
             _context = context;
         }
@@ -60,7 +60,7 @@ namespace GuacosTracker3.Controllers
         // POST: Tickets/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,Title,EmployeeId,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("Title,EmployeeId,Description,Status,Priority")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +95,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,CustomerId,Title,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
         {
             if (id != ticket.Id)
             {

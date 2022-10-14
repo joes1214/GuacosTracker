@@ -22,7 +22,7 @@ namespace GuacosTracker3.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("GuacosTracker3.Models.Customers", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace GuacosTracker3.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Note", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +93,7 @@ namespace GuacosTracker3.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int>("CustomersId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -107,7 +107,7 @@ namespace GuacosTracker3.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("NotesId")
+                    b.Property<Guid?>("NoteId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Priority")
@@ -124,7 +124,9 @@ namespace GuacosTracker3.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NotesId");
+                    b.HasIndex("CustomersId");
+
+                    b.HasIndex("NoteId");
 
                     b.ToTable("Ticket");
                 });
@@ -356,9 +358,17 @@ namespace GuacosTracker3.Migrations
 
             modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
                 {
-                    b.HasOne("GuacosTracker3.Models.Notes", null)
+                    b.HasOne("GuacosTracker3.Models.Customer", "Customers")
+                        .WithMany()
+                        .HasForeignKey("CustomersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GuacosTracker3.Models.Note", null)
                         .WithMany("Ticket")
-                        .HasForeignKey("NotesId");
+                        .HasForeignKey("NoteId");
+
+                    b.Navigation("Customers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -412,7 +422,7 @@ namespace GuacosTracker3.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Note", b =>
                 {
                     b.Navigation("Ticket");
                 });

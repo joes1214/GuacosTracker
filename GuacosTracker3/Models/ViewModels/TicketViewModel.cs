@@ -3,7 +3,7 @@
     public class TicketViewModel
     {
         public Ticket Tickets { get; set; }
-        public Customers Customer { get; set; }
+        public Customer Customer { get; set; }
 
     }
 }

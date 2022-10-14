@@ -11,11 +11,11 @@ using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
-    public class CustomersController : Controller
+    public class CustomerController : Controller
     {
         private readonly TrackerDbContext _context;
 
-        public CustomersController(TrackerDbContext context)
+        public CustomerController(TrackerDbContext context)
         {
             _context = context;
         }
@@ -57,7 +57,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customers customers)
+        public async Task<IActionResult> Create([Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customer customers)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +76,7 @@ namespace GuacosTracker3.Controllers
                 RedirectToAction(nameof(Index));
             }
 
-            Customers _customers = _context.Customers.Find(id);
+            Customer _customers = _context.Customers.Find(id);
             return View(TicketFactory.Create(_customers, new Ticket()));
         }
 
@@ -101,7 +101,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customers customers)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customer customers)
         {
             if (id != customers.Id)
             {

@@ -14,8 +14,8 @@ namespace GuacosTracker3.Data
 
         }
 
-        public virtual DbSet<Customers> Customers { get; set; }
-        public virtual DbSet<Notes> Notes { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<Note> Notes { get; set; }
         public virtual DbSet<Ticket> Ticket { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

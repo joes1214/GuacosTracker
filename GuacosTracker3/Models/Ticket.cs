@@ -12,11 +12,6 @@ namespace GuacosTracker3.Models
         [Display(Name = "Ticket ID")]
         public Guid Id { get; set; }
 
-        [BindProperty]
-        [ForeignKey("Customers")]
-        [Display(Name = "Customer ID")]
-        public int CustomerId { get; set; }
-
         [Required]
         [Column(TypeName = "nvarchar(100)")]
         [MaxLength(100, ErrorMessage = "Too many characters! Max 100.")]
@@ -44,5 +39,8 @@ namespace GuacosTracker3.Models
 
         [Display(Name = "Priority?")]
         public bool Priority { get; set; } = false;
+
+        public virtual Customer Customers { get; set; }
+
     }
 }

@@ -11,11 +11,11 @@ using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
-    public class NotesController : Controller
+    public class NoteController : Controller
     {
         private readonly TrackerDbContext _context;
 
-        public NotesController(TrackerDbContext context)
+        public NoteController(TrackerDbContext context)
         {
             _context = context;
         }
@@ -63,7 +63,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateNote([Bind("TicketId, Description, EmployeeId")] Notes note)
+        public async Task<IActionResult> CreateNote([Bind("TicketId, Description, EmployeeId")] Note note)
         {
             if (ModelState.IsValid)
             {
@@ -99,7 +99,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,TicketId,EmployeeId,Description,Date")] Notes notes)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,TicketId,EmployeeId,Description,Date")] Note notes)
         {
             if (id != notes.Id)
             {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GuacosTracker3.Models
 {
-    public class Notes
+    public class Note
     {
         [Key]
         [Required]

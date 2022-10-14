@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GuacosTracker3.Models
 {
-    public class Customers
+    public class Customer
     {
         [Key]
         [Display(Name = "Customer ID")]
@@ -42,9 +42,6 @@ namespace GuacosTracker3.Models
         [Column(TypeName = "nvarchar(100)")]
         [MaxLength(100, ErrorMessage = "Too many characters! Max 100.")]
         public string? Email { get; set; }
-
-
-
 
     }
 }

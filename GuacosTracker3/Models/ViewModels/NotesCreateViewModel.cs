@@ -2,9 +2,9 @@
 {
     public class NotesCreateViewModel
     {
-        public static Notes Create(Guid TicketId)
+        public static Note Create(Guid TicketId)
         {
-            return new Notes
+            return new Note
             {
                 TicketId = TicketId
             };
