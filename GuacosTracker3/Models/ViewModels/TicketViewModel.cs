@@ -1,9 +1,13 @@
-﻿namespace GuacosTracker3.Models.ViewModels
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace GuacosTracker3.Models.ViewModels
 {
     public class TicketViewModel
     {
-        public Ticket Tickets { get; set; }
-        public Customers Customer { get; set; }
+        public Ticket Ticket { get; set; }
+        public Customer? Customer { get; set; }
 
+        public List<Ticket> Tickets { get; set; }
+        //To display multiple tickets.
     }
 }

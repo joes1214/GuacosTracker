@@ -6,14 +6,14 @@ namespace GuacosTracker3.Models.ViewModels
     public class TicketNotesViewModel
     {
         public Ticket Ticket;
-        public Notes Note;
+        public Note Note;
 
         public TicketNotesViewModel()
         {
 
         }
 
-        public TicketNotesViewModel(Ticket viewTicket, Notes viewNote)
+        public TicketNotesViewModel(Ticket viewTicket, Note viewNote)
         {
             Ticket = viewTicket;
             Note = viewNote;

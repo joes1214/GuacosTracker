@@ -10,12 +10,7 @@ namespace GuacosTracker3.Models
         [Key]
         //See how to create random IDs
         [Display(Name = "Ticket ID")]
-        public Guid Id { get; set; }
-
-        [BindProperty]
-        [ForeignKey("Customers")]
-        [Display(Name = "Customer ID")]
-        public int CustomerId { get; set; }
+        public Guid Id { get; set; } = new Guid();
 
         [Required]
         [Column(TypeName = "nvarchar(100)")]
@@ -39,10 +34,13 @@ namespace GuacosTracker3.Models
 
         [Required]
         [Column(TypeName = "nvarchar(25)")]
-        public string Status { get; set; }
+        public string Status { get; set; } 
         //In-Progress | Awaiting Repair | Completed | Awaiting Customer
 
         [Display(Name = "Priority?")]
         public bool Priority { get; set; } = false;
+
+        public int Customer { get; set; }
+
     }
 }

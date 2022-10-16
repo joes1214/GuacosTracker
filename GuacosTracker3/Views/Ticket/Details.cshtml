@@ -1,0 +1,66 @@
+﻿@model Ticket
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Ticket</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.EmployeeId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EmployeeId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        @*        <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Date)
+        </dd>*@
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+
+    <form method="post" asp-controller="Notes" asp-action="Create" asp-route-id="@Model?.Id">
+        <input type="submit" value="Create Note" class="btn btn-primary mt-2" />
+    </form>
+
+
+</div>

@@ -8,14 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
 using GuacosTracker3.Models.ViewModels;
+using GuacosTracker3.SharedData;
 
 namespace GuacosTracker3.Controllers
 {
-    public class CustomersController : Controller
+    public class CustomerController : Controller
     {
         private readonly TrackerDbContext _context;
 
-        public CustomersController(TrackerDbContext context)
+        public CustomerController(TrackerDbContext context)
         {
             _context = context;
         }
@@ -31,19 +32,27 @@ namespace GuacosTracker3.Controllers
         // GET: Customers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Customers == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var customers = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (customers == null)
+            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+
+            if (_customers == null)
             {
                 return NotFound();
             }
 
-            return View(customers);
+            TicketViewModel _ticketViewModel = new TicketViewModel();
+
+            _ticketViewModel.Customer = _customers;
+
+            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customers.Id).ToListAsync();
+
+            _ticketViewModel.Tickets = tickets;
+
+            return View(_ticketViewModel);
         }
 
         // GET: Customers/Create
@@ -57,7 +66,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customers customers)
+        public async Task<IActionResult> Create([Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customer customers)
         {
             if (ModelState.IsValid)
             {
@@ -68,16 +77,55 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
-        [HttpPost]
         public async Task<IActionResult> CreateTicket(int? id)
         {
             if(id == null)
             {
-                RedirectToAction(nameof(Index));
+                return NotFound();
             }
 
-            Customers _customers = _context.Customers.Find(id);
-            return View(TicketFactory.Create(_customers, new Ticket()));
+            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+
+            if (_customers == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            TicketViewModel _ticketViewModel = new TicketViewModel();
+
+            _ticketViewModel.Customer = _customers;
+            //_ticketViewModel.StatusItemList = ProgressList.GetStatusList();
+
+            List<Ticket> tickets = new List<Ticket>();
+
+            return View(_ticketViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTicket([Bind("Ticket, Customer, Tickets")] TicketViewModel _ticketViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Ticket ticket = new Ticket();
+
+                ticket.Title = _ticketViewModel.Ticket.Title;
+                ticket.EmployeeId = _ticketViewModel.Ticket.EmployeeId; //Find how to grab through Auth
+                ticket.Description = _ticketViewModel.Ticket.Description;
+                ticket.Status = _ticketViewModel.Ticket.Status;
+                ticket.Priority = _ticketViewModel.Ticket.Priority;
+                ticket.Customer = _ticketViewModel.Ticket.Customer;
+
+                _context.Ticket.Add(ticket);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(controllerName: "Ticket", actionName: "Index");
+
+            } else
+            {
+                return RedirectToAction("Index");
+            }
+
         }
 
         // GET: Customers/Edit/5
@@ -101,7 +149,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customers customers)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customer customers)
         {
             if (id != customers.Id)
             {

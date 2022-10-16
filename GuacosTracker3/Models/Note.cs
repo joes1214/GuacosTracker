@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GuacosTracker3.Models
 {
-    public class Notes
+    public class Note
     {
         [Key]
         [Required]
@@ -28,11 +28,9 @@ namespace GuacosTracker3.Models
         [MinLength(10, ErrorMessage = "Please write a short description!")]
         public string Description { get; set; }
 
-        
-
         [Required]
         public DateTime Date { get; set; } = DateTime.Now;
 
-        public ICollection<Ticket> Ticket { get; set; }
+        public virtual Ticket Ticket { get; set; }
     }
 }

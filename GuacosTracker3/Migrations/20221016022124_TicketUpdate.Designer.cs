@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuacosTracker3.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    [Migration("20221014012103_Test3Dv")]
-    partial class Test3Dv
+    [Migration("20221016022124_TicketUpdate")]
+    partial class TicketUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace GuacosTracker3.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("GuacosTracker3.Models.Customers", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,7 +64,7 @@ namespace GuacosTracker3.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Note", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,6 +86,8 @@ namespace GuacosTracker3.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TicketId");
+
                     b.ToTable("Notes");
                 });
 
@@ -95,7 +97,7 @@ namespace GuacosTracker3.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int>("Customer")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -108,9 +110,6 @@ namespace GuacosTracker3.Migrations
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("NotesId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Priority")
                         .HasColumnType("bit");
@@ -125,8 +124,6 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("NotesId");
 
                     b.ToTable("Ticket");
                 });
@@ -356,11 +353,15 @@ namespace GuacosTracker3.Migrations
                     b.HasDiscriminator().HasValue("TrackerUser");
                 });
 
-            modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
+            modelBuilder.Entity("GuacosTracker3.Models.Note", b =>
                 {
-                    b.HasOne("GuacosTracker3.Models.Notes", null)
-                        .WithMany("Ticket")
-                        .HasForeignKey("NotesId");
+                    b.HasOne("GuacosTracker3.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -412,11 +413,6 @@ namespace GuacosTracker3.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("GuacosTracker3.Models.Notes", b =>
-                {
-                    b.Navigation("Ticket");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,11 +12,11 @@ using GuacosTracker3.Models.ViewModels;
 
 namespace GuacosTracker3.Controllers
 {
-    public class TicketsController : Controller
+    public class TicketController : Controller
     {
         private readonly TrackerDbContext _context;
 
-        public TicketsController(TrackerDbContext context)
+        public TicketController(TrackerDbContext context)
         {
             _context = context;
         }
@@ -24,15 +24,43 @@ namespace GuacosTracker3.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-              return _context.Ticket != null ? 
-                          View(await _context.Ticket.ToListAsync()) :
-                          Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
+            if (_context.Ticket == null)
+            {
+                Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
+            }
+
+            List<TicketViewModel> _ticketList = new List<TicketViewModel>();
+
+            TicketViewModel _ticketViewModel = new TicketViewModel();
+            Customer _customer = new Customer();
+
+            List<Ticket> tickets = await _context.Ticket.ToListAsync();
+
+            foreach (Ticket item in tickets)
+            {
+                _ticketViewModel.Ticket = item;
+                _ticketViewModel.Customer = await _context.Customers.FindAsync(item.Customer);
+                _ticketList.Add(_ticketViewModel);
+                _ticketViewModel = new TicketViewModel();
+            }
+
+            return View(_ticketList);
+
+
+            //return _context.Ticket != null ? 
+            //            View(await _context.Ticket.ToListAsync()) :
+            //            Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
         }
 
         // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(Guid? id)
         {
-            Ticket _ticket = await _context.Ticket.FindAsync(id);
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            Ticket _ticket = await _context.Ticket.SingleOrDefaultAsync(t => t.Id == id);
 
             if (_ticket == null)
             {
@@ -40,7 +68,7 @@ namespace GuacosTracker3.Controllers
             }
 
 
-            return View();
+            return View(_ticket);
         }
 
         // GET: Tickets/Create
@@ -60,18 +88,18 @@ namespace GuacosTracker3.Controllers
         // POST: Tickets/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,Title,EmployeeId,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("Title,EmployeeId,Description,Status,Priority")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
                 ticket.Id = Guid.NewGuid();
-                ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
+                //ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(actionName: "Index", controllerName:"Tickets");
+                return RedirectToAction(actionName: "Index", controllerName: "Tickets");
             }
 
-            return RedirectToActionPreserveMethod(actionName:"CreateTicket", controllerName:"Customers");
+            return RedirectToActionPreserveMethod(actionName: "CreateTicket", controllerName: "Customers");
         }
 
         // GET: Tickets/Edit/5
@@ -95,7 +123,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,CustomerId,Title,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,zTitle,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
         {
             if (id != ticket.Id)
             {
@@ -106,7 +134,7 @@ namespace GuacosTracker3.Controllers
             {
                 try
                 {
-                    ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
+                    //ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
@@ -140,14 +168,14 @@ namespace GuacosTracker3.Controllers
             {
                 _context.Ticket.Remove(ticket);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TicketExists(Guid id)
         {
-          return (_context.Ticket?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Ticket?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
