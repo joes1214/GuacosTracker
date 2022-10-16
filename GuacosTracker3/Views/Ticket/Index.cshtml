@@ -1,0 +1,74 @@
+﻿@model List<TicketViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-controller="Customers" asp-action="Index">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Status
+            </th>
+            <th>
+                Customer
+            </th>
+            <th>
+                Employee ID
+            </th>
+            <th>
+                Date
+            </th>
+
+            <th>
+                Title
+            </th>
+            <th>
+                Priority
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(Model => item.Ticket.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(Model => item.Customer.FName)
+                    @Html.DisplayFor(Model => item.Customer.LName)
+                </td>
+                <td>
+                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
+                </td>
+                <td>
+                    @Html.DisplayFor(Model => item.Ticket.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(Model => item.Ticket.Title)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(Model => item.Ticket.Priority)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Ticket.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Ticket.Id">Details</a> |
+                    @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
+                    <form asp-action="Delete" asp-route-id="@item.Ticket.Id">
+                        <button type="submit">
+                            delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

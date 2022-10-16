@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GuacosTracker3.Migrations
 {
-    public partial class TicketRelationChange : Migration
+    public partial class TicketUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,18 +70,21 @@ namespace GuacosTracker3.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notes",
+                name: "Ticket",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(MAX)", maxLength: 4000, nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Status = table.Column<string>(type: "nvarchar(25)", nullable: false),
+                    Priority = table.Column<bool>(type: "bit", nullable: false),
+                    Customer = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notes", x => x.Id);
+                    table.PrimaryKey("PK_Ticket", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,33 +194,24 @@ namespace GuacosTracker3.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Ticket",
+                name: "Notes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(MAX)", maxLength: 4000, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(25)", nullable: false),
-                    Priority = table.Column<bool>(type: "bit", nullable: false),
-                    CustomersId = table.Column<int>(type: "int", nullable: false),
-                    NoteId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ticket", x => x.Id);
+                    table.PrimaryKey("PK_Notes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ticket_Customers_CustomersId",
-                        column: x => x.CustomersId,
-                        principalTable: "Customers",
+                        name: "FK_Notes_Ticket_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Ticket",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Ticket_Notes_NoteId",
-                        column: x => x.NoteId,
-                        principalTable: "Notes",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -260,14 +254,9 @@ namespace GuacosTracker3.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ticket_CustomersId",
-                table: "Ticket",
-                column: "CustomersId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ticket_NoteId",
-                table: "Ticket",
-                column: "NoteId");
+                name: "IX_Notes_TicketId",
+                table: "Notes",
+                column: "TicketId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -288,7 +277,10 @@ namespace GuacosTracker3.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Ticket");
+                name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "Notes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -297,10 +289,7 @@ namespace GuacosTracker3.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Customers");
-
-            migrationBuilder.DropTable(
-                name: "Notes");
+                name: "Ticket");
         }
     }
 }

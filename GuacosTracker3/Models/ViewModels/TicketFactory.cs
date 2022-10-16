@@ -6,7 +6,7 @@
         {
             return new TicketViewModel
             {
-                Tickets = _ticket,
+                Ticket = _ticket,
                 Customer = _customers,
             };
         }
