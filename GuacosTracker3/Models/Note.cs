@@ -10,7 +10,7 @@ namespace GuacosTracker3.Models
         [Required]
         //See how to create random IDs
         [Display(Name = "Notes ID")]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = new Guid();
 
         [Required]
         [ForeignKey("Tickets")]
@@ -24,13 +24,17 @@ namespace GuacosTracker3.Models
 
         [Required]
         [Column(TypeName = "nvarchar(MAX)")]
+        [Display(Name = "Description")]
         [MaxLength(4000, ErrorMessage = "Too many characters! Max 4,000.")]
         [MinLength(10, ErrorMessage = "Please write a short description!")]
         public string Description { get; set; }
 
         [Required]
-        public DateTime Date { get; set; } = DateTime.Now;
+        [Display(Name = "Status")]
+        [Column(TypeName = "nvarchar(25)")]
+        public string Status { get; set; }
 
-        public virtual Ticket Ticket { get; set; }
+        [Required]
+        public DateTime Date { get; set; } = DateTime.Now;
     }
 }

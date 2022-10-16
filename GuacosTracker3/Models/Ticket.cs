@@ -34,13 +34,20 @@ namespace GuacosTracker3.Models
 
         [Required]
         [Column(TypeName = "nvarchar(25)")]
-        public string Status { get; set; } 
+        public string Status { get; set; }
         //In-Progress | Awaiting Repair | Completed | Awaiting Customer
 
-        [Display(Name = "Priority?")]
         public bool Priority { get; set; } = false;
 
-        public int Customer { get; set; }
+        public DateTime RecentChange { get; set; } = DateTime.Now;
 
+        //Recent Changes Tracker
+        [Column(TypeName = "nvarchar(25)")]
+        public string RecentStatus { get; set; }
+
+        [Display(Name = "Priority?")]
+
+        //Relations
+        public int Customer { get; set; }
     }
 }
