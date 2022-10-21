@@ -1,4 +1,5 @@
-﻿@model List<TicketViewModel>
+﻿@using GuacosTracker3.SharedData
+@model List<TicketViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -35,11 +36,11 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (TicketViewModel item in Model)
         {
-            <tr>
+            <tr class="@ProgressList.BgColor(item.Ticket.RecentStatus)">
                 <td>
-                    @Html.DisplayFor(Model => item.Ticket.Status)
+                    @Html.DisplayFor(Model => item.Ticket.RecentStatus)
                 </td>
                 <td>
                     @Html.DisplayFor(Model => item.Customer.FName)
@@ -49,7 +50,7 @@
                     @Html.DisplayFor(Model => item.Ticket.EmployeeId)
                 </td>
                 <td>
-                    @Html.DisplayFor(Model => item.Ticket.Date)
+                    @Html.DisplayFor(Model => item.Ticket.RecentChange)
                 </td>
                 <td>
                     @Html.DisplayFor(Model => item.Ticket.Title)

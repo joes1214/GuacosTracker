@@ -1,4 +1,5 @@
-﻿@model Ticket
+﻿@using GuacosTracker3.SharedData
+@model TicketNoteCustomerViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -6,61 +7,157 @@
 
 <h1>Details</h1>
 
-<div>
-    <h4>Ticket</h4>
+<div class="row">
+
+    <h4>
+        Ticket: @Html.DisplayFor(model => model.Ticket.Title)
+    </h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EmployeeId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EmployeeId)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        @*        <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Date)
-        </dd>*@
-    </dl>
+
+
+    <div class="col-md-6">
+        <table class="table table-bordered mt-2">
+            <tbody>
+                <tr class="table-active">
+                    <th>@Html.DisplayNameFor(model => model.Ticket.Id):</th>
+                    <td>@Html.DisplayFor(model => model.Ticket.Id)</td>
+                </tr>
+                <tr class="table-active">
+                    <th>Customer:</th>
+                    <td>
+                        @Html.DisplayFor(model => model.Customer.LName),
+                        @Html.DisplayFor(model => model.Customer.FName)
+                    </td>
+                </tr>
+                <tr class="table-active">
+                    <th>@Html.DisplayNameFor(model => model.Ticket.Date):</th>
+                    <td>@Html.DisplayFor(model => model.Ticket.Date)</td>
+                </tr>
+                <tr class="table-active">
+                    <th>@Html.DisplayNameFor(model => model.Ticket.EmployeeId):</th>
+                    <td colspan="3">@Html.DisplayFor(model => model.Ticket.EmployeeId)</td>
+                </tr>
+                <tr class="table-default">
+                    <td colspan="4">
+                        <textarea class="form-control" readonly>@Html.DisplayFor(model => model.Ticket.Description)</textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Ticket.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
+</div>
 
-    <form method="post" asp-controller="Notes" asp-action="Create" asp-route-id="@Model?.Id">
-        <input type="submit" value="Create Note" class="btn btn-primary mt-2" />
-    </form>
+<div class="mt-4">
+    <h4>Notes</h4>
+    <hr />
+</div>
 
+<div class="row">
+    <h5>Add Note:</h5>
+    <div class="col-md-6">
+        <form asp-action="Details">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div>
+                <input type="hidden" asp-for="Ticket" value="@Model.Ticket.Id" />
+                <input type="hidden" asp-for="Ticket" value="@Model.Ticket" />
+                <input type="hidden" asp-for="Customer" value="@Model.Customer" />
+            </div>
 
+            <div class="form-group">
+                <label asp-for="Note.EmployeeId" class="control-label"></label>*
+                <input asp-for="Note.EmployeeId" class="form-control" />
+                <span asp-validation-for="Note.EmployeeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Note.Description" class="control-label"></label>*
+                <textarea asp-for="Note.Description" class="form-control"></textarea>
+                <span asp-validation-for="Note.Description" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Note.Status" class="control-label"></label>*
+                <select asp-for="Note.Status" class="form-control" asp-items="ProgressList.GetStatusList()">
+                </select>
+                <span asp-validation-for="Note.Status" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2 mb-4">
+                <input type="submit" value="Create Note" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <hr />
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered mt-2">
+            <thead>
+                @if (!Model.Notes.Any())
+                {
+                    <tr>
+                        <th>
+                            No previous notes.
+                        </th>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <th colspan="2" class="bg-active">
+                            Notes:
+                        </th>
+                    </tr>
+
+                }
+
+            </thead>
+            <tbody>
+                @if (Model.Notes.Any())
+                {
+                    @foreach (Note item in Model.Notes)
+                    {
+                        <tr class="table-active">
+                            <td>
+                                <b>ID:</b> @item.Id
+                            </td>
+                            <td>
+                                @item.Date.ToString("MM/dd/yy")
+                            </td>
+                        </tr>
+
+                        <tr class="@ProgressList.BgColor(item.Status)">
+                            <td colspan="2">
+                                Status: @Html.DisplayFor(modelItem => item.Status)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2">
+                                <label asp-for="Note.Description" class="control-label"></label>
+                                <textarea class="form-control" readonly>@Html.DisplayFor(modelItem => item.Description)</textarea>
+                            </td>
+                        </tr>
+
+                        <tr class="small">
+                            <td colspan="2">
+                                <i class="text-secondary">
+                                    Note created by: @item.EmployeeId
+                                </i>
+                            </td>
+                        </tr>
+
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
 </div>
