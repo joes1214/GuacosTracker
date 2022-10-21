@@ -60,13 +60,13 @@
                     @Html.DisplayFor(Model => item.Ticket.Priority)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Ticket.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Ticket.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@item.Ticket.Id" class="btn"><i class="fa-sharp fa-solid fa-pen-to-square d-inline"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.Ticket.Id" class="btn"><i class="fa-sharp fa-solid fa-circle-info d-inline"></i></a>
                     @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
-                    <form asp-action="Delete" asp-route-id="@item.Ticket.Id">
-                        <button type="submit">
-                            delete
-                        </button>
+                    <form asp-action="Delete" asp-route-id="@item.Ticket.Id" class=" d-inline">
+                        <a class="btn">
+                            <i class="fa-sharp fa-solid fa-trash"></i>
+                        </a>
                     </form>
                 </td>
             </tr>

@@ -63,8 +63,10 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-
-                    <a asp-action="CreateTicket" asp-route-id="@item.Id" type="submit" value="Create" class="btn btn-primary">Create Ticket</a>
+                    
+                    <a asp-action="CreateTicket" asp-route-id="@item.Id" type="submit" value="Create" class="btn btn-sm btn-primary">
+                        <i class="fa-sharp fa-solid fa-plus"></i> Ticket
+                        </a>
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
