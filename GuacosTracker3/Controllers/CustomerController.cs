@@ -115,6 +115,8 @@ namespace GuacosTracker3.Controllers
                 ticket.Status = _ticketViewModel.Ticket.Status;
                 ticket.Priority = _ticketViewModel.Ticket.Priority;
                 ticket.Customer = _ticketViewModel.Ticket.Customer;
+                ticket.Date = DateTime.Now;
+                ticket.RecentStatus = _ticketViewModel.Ticket.Status;
 
                 _context.Ticket.Add(ticket);
                 await _context.SaveChangesAsync();

@@ -24,7 +24,7 @@ namespace GuacosTracker3.Models
         public int EmployeeId { get; set; }
 
         [Required]
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateTime Date { get; set; }
 
         [Required]
         [Column(TypeName = "nvarchar(MAX)")]
