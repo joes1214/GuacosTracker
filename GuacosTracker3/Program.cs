@@ -2,10 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using GuacosTracker3.Data;
 using GuacosTracker3.Areas.Identity.Data;
+using Auth0.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //DI for DbContext
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+    options.Domain = builder.Configuration["Auth0:Domain"];
+    options.ClientId = builder.Configuration["Auth0:ClientId"];
+});
 builder.Services.AddDbContext<TrackerDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -26,18 +32,32 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseStaticFiles();
+app.UseCookiePolicy();
+
+app.MapRazorPages();
+
 
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
 
-app.MapRazorPages();
+app.MapControllerRoute(
+    name: "Areas",
+    pattern: "{area:exists}/{controller=Users}/{action=Index}/{id?}");
+
+app.MapDefaultControllerRoute();
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();
