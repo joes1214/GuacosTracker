@@ -9,9 +9,11 @@ using GuacosTracker3.Models;
 using GuacosTracker3.Data;
 using GuacosTracker3.SharedData;
 using GuacosTracker3.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GuacosTracker3.Controllers
 {
+    [Authorize(Roles = "Employee, Manager, Admin")]
     public class TicketController : Controller
     {
         private readonly TrackerDbContext _context;
@@ -182,6 +184,7 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets/Edit/5
+        [Authorize(Roles = "Manager, Admin")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.Ticket == null)
@@ -234,6 +237,7 @@ namespace GuacosTracker3.Controllers
         }
 
         // POST: Tickets/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
