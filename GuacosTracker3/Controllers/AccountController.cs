@@ -14,9 +14,6 @@ namespace GuacosTracker3.Controllers
             var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
               .WithRedirectUri(returnUrl)
               .Build();
-            // Indicate here where Auth0 should redirect the user after a login.
-            // Note that the resulting absolute Uri must be added to the
-            // **Allowed Callback URLs** settings for the app.
 
             await HttpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
         }
@@ -25,15 +22,10 @@ namespace GuacosTracker3.Controllers
         public async Task Logout()
         {
             var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
-              // Indicate here where Auth0 should redirect the user after a logout.
-              // Note that the resulting absolute Uri must be added to the
-              // **Allowed Logout URLs** settings for the app.
               .WithRedirectUri(Url?.Action("Index", "Home") ?? "")
               .Build();
 
-            // Logout from Auth0
-            await HttpContext.SignOutAsync(Auth0Constants.AuthenticationScheme,authenticationProperties);
-            // Logout from the application
+            await HttpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 

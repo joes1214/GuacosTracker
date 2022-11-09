@@ -2,21 +2,46 @@
     ViewData["Title"] = "User Profile";
 }
 
+@*
+    There is a much better way to go about this, but for the 
+    purpose of displaying information
+    in a basic manner this was my approach.
+*@
+<h3 class="text-center">@ViewData["Title"]</h3>
 <div class="row">
-    <div class="col-md-12">
-        <div class="row">
-            <h2>@ViewData["Title"].</h2>
+    <div class="d-flex justify-content-center col-md-12 mt-2">
 
-            <div class="col-md-2">
-                <img src="@Model.ProfileImage"
-                     alt="" class="img-rounded img-responsive" />
-            </div>
-            <div class="col-md-4">
-                <h3>@Model.Name</h3>
-                <p>
-                    <i class="glyphicon glyphicon-envelope"></i> @Model.EmailAddress
-                </p>
-            </div>
+        <div>
+            <img src="@User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value"
+                 alt="" class="img-rounded img-responsive" />
         </div>
+
+
+        <div style="margin-left:15px;">
+            <table class="table table-sm">
+                <tr>
+                    <th scope="col">Email:</th>
+                    <td>@User.Identity?.Name</td>
+                </tr>
+
+                <tr>
+                    <th scope="col">Role:</th>
+                    <td>@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value</td>
+                </tr>
+
+                <tr class="">
+                    <th scope="col">AuthId:</th>
+                    <td>@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value</td>
+                </tr>
+
+                <tr>
+                    <th scope="col">Empty:</th>
+                    <td>Empty</td>
+                </tr>
+            </table>
+        </div>
+
     </div>
 </div>
+</div>
+

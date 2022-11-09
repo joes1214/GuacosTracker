@@ -9,9 +9,11 @@ using GuacosTracker3.Models;
 using GuacosTracker3.Data;
 using GuacosTracker3.Models.ViewModels;
 using GuacosTracker3.SharedData;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GuacosTracker3.Controllers
 {
+    [Authorize(Roles = "Employee, Manager, Admin")]
     public class CustomerController : Controller
     {
         private readonly TrackerDbContext _context;
@@ -181,6 +183,7 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
+        [Authorize(Roles = "Manager, Admin")]
         // GET: Customers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
