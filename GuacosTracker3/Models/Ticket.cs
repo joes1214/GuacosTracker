@@ -43,7 +43,7 @@ namespace GuacosTracker3.Models
 
         //Recent Changes Tracker
         [Column(TypeName = "nvarchar(25)")]
-        public string RecentStatus { get; set; }
+        public string? RecentStatus { get; set; }
 
         [Display(Name = "Priority?")]
 
