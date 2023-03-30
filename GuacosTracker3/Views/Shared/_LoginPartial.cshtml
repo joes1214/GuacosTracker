@@ -32,7 +32,7 @@
         </li>
 
         <li class="nav-item">
-            <button class="btn btn-danger" asp-controller="Account" asp-action="Logout">Logout</button>
+            <a class="btn btn-danger" asp-controller="Account" asp-action="Logout">Logout</a>
         </li>
 
 
@@ -42,6 +42,6 @@
     }
     else
     {
-        <a asp-controller="Account" asp-action="Login">Login</a>
+        <a class="btn btn-secondary" asp-controller="Account" asp-action="Login">Login</a>
     }
 </ul>
