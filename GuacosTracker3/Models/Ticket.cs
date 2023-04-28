@@ -19,9 +19,8 @@ namespace GuacosTracker3.Models
         public string Title { get; set; }
 
         [Required]
-        [ForeignKey("Employee")]
         [Display(Name = "Employee ID")]
-        public int EmployeeId { get; set; }
+        public string EmployeeId { get; set; }
 
         [Required]
         public DateTime Date { get; set; }

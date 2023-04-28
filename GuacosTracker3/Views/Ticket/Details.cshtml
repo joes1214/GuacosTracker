@@ -66,12 +66,7 @@
                 <input type="hidden" asp-for="Ticket" value="@Model.Ticket.Id" />
                 <input type="hidden" asp-for="Ticket" value="@Model.Ticket" />
                 <input type="hidden" asp-for="Customer" value="@Model.Customer" />
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Note.EmployeeId" class="control-label"></label>*
-                <input asp-for="Note.EmployeeId" class="form-control" />
-                <span asp-validation-for="Note.EmployeeId" class="text-danger"></span>
+                <input type="hidden" asp-for="Note.EmployeeId" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
 
             <div class="form-group">
@@ -132,7 +127,7 @@
 
                         <tr class="@ProgressList.BgColor(item.Status)">
                             <td colspan="2">
-                                Status: @Html.DisplayFor(modelItem => item.Status)
+                                <b>Status: </b> @Html.DisplayFor(modelItem => item.Status)
                             </td>
                         </tr>
 
@@ -146,7 +141,10 @@
                         <tr class="small">
                             <td colspan="2">
                                 <i class="text-secondary">
-                                    Note created by: @item.EmployeeId
+                                    Note created by: @item.EmployeeId @User.Claims.FirstOrDefault(c => c.Type == item.EmployeeId)?.Value
+                                   @* @User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value *@
+                                    @User.FindFirst(c => c.Type == "name")?.Value
+                                    
                                 </i>
                             </td>
                         </tr>

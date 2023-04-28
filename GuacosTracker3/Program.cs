@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using GuacosTracker3.Data;
 using GuacosTracker3.Areas.Identity.Data;
 using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,16 @@ builder.Services.AddDbContext<TrackerDbContext>(options =>
 
 builder.Services.AddDefaultIdentity<TrackerUser>(options => options.SignIn.RequireConfirmedAccount = false) //used to check confirmation email
     .AddEntityFrameworkStores<TrackerDbContext>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = builder.Configuration["Auth0:Domain"];
+    options.Audience = builder.Configuration["Auth0:Audience"];
+});
 
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
