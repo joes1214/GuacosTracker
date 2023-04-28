@@ -1,9 +1,11 @@
-﻿@{
+﻿@model Account
+
+@{
     ViewData["Title"] = "User Profile";
 }
 
 @*
-    There is a much better way to go about this, but for the 
+    There is a much better way to go about this, but for the
     purpose of displaying information
     in a basic manner this was my approach.
 *@
@@ -12,7 +14,7 @@
     <div class="d-flex justify-content-center col-md-12 mt-2">
 
         <div>
-            <img src="@User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value"
+            <img src="@Model.Picture"
                  alt="" class="img-rounded img-responsive" />
         </div>
 
@@ -20,23 +22,28 @@
         <div style="margin-left:15px;">
             <table class="table table-sm">
                 <tr>
+                    <th scope="col">Name:</th>
+                    <td>@Model.Name</td>
+                </tr>
+
+                <tr>
                     <th scope="col">Email:</th>
-                    <td>@User.Identity?.Name</td>
+                    <td>@Model.Email</td>
                 </tr>
 
                 <tr>
                     <th scope="col">Role:</th>
-                    <td>@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value</td>
+                    <td>@Model.Role</td>
                 </tr>
 
                 <tr class="">
                     <th scope="col">AuthId:</th>
-                    <td>@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value</td>
+                    <td>@Model.id</td>
                 </tr>
 
                 <tr>
                     <th scope="col">Empty:</th>
-                    <td>Empty</td>
+                    <td>@User.Claims.FirstOrDefault(c => c.Type == "nickname")?.Value</td>
                 </tr>
             </table>
         </div>

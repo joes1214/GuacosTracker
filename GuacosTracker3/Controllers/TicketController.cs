@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
-using GuacosTracker3.SharedData;
 using GuacosTracker3.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
@@ -47,11 +41,6 @@ namespace GuacosTracker3.Controllers
             }
 
             return View(_ticketList);
-
-
-            //return _context.Ticket != null ? 
-            //            View(await _context.Ticket.ToListAsync()) :
-            //            Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
         }
 
         // GET: Tickets/Details/5
@@ -92,8 +81,6 @@ namespace GuacosTracker3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(Guid? id, [Bind("Ticket, Customer, Note")] TicketNoteCustomerViewModel _ticketViewModel)
         {
-
-
             if (id == null)
             {
                 return RedirectToAction("Index");
@@ -151,20 +138,6 @@ namespace GuacosTracker3.Controllers
 
             return View(_newTicketViewModel);
         }
-
-        // GET: Tickets/Create
-        //[HttpGet]
-        //public IActionResult Create(int Id = 0)
-        //{
-        //    Customers _customer = _context.Customers.Find(Id);
-
-        //    if (Id == 0 || _customer == null)
-        //    {
-        //        return RedirectToAction(actionName: "Index", controllerName: "Customers");
-        //    }
-        //    return View(TicketFactory.Create(Id, new Ticket()));
-        //}
-
 
         // POST: Tickets/Create
         [HttpPost]
@@ -238,15 +211,17 @@ namespace GuacosTracker3.Controllers
 
         // POST: Tickets/Delete/5
         [Authorize(Roles = "Admin")]
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
-            if (_context.Ticket == null)
+            if (id == null || _context.Ticket== null)
             {
                 return Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
             }
-            var ticket = await _context.Ticket.FindAsync(id);
+
+            var ticket = await _context.Ticket
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket != null)
             {
                 _context.Ticket.Remove(ticket);

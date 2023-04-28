@@ -1,4 +1,5 @@
 ﻿using Auth0.AspNetCore.Authentication;
+using GuacosTracker3.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -32,12 +33,15 @@ namespace GuacosTracker3.Controllers
         [Authorize]
         public IActionResult Profile()
         {
-            return View(new
-            {
-                Name = User.Identity?.Name,
-                EmailAddress = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
-                ProfileImage = User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value
-            });
+            Account account = new Account();
+
+            account.id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            account.Name = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            account.Email = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+            account.Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            account.Picture = User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+
+            return View(account);
         }
 
         [Authorize]

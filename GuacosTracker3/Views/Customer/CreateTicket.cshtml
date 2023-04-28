@@ -10,7 +10,7 @@
 
 
 <div class="col-span-6">
-    <h2>Creating ticket for: <i>@Model.Customer.FName @Model.Customer.LName</i> ♥</h2>
+    <h2>Creating ticket for: @Model.Customer.FName @Model.Customer.LName</h2>
 </div>
 <hr />
 <div class="row">
@@ -34,8 +34,8 @@
 
             <div class="form-group">
                 @*Will be pulled automatically*@
-                <label asp-for="Ticket.EmployeeId" class="control-label"></label>*
-                <input asp-for="Ticket.EmployeeId" class="form-control" />
+                @*<label asp-for="Ticket.EmployeeId" class="control-label"></label>**@
+                <input type="hidden" asp-for="Ticket.EmployeeId" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
             <div class="form-group">
                 <label asp-for="Ticket.Description" class="control-label"></label>*
@@ -70,4 +70,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    }
+}

@@ -8,7 +8,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-controller="Customers" asp-action="Index">Create New</a>
+    <a asp-controller="Customer" asp-action="Index">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -47,6 +47,7 @@
                     @Html.DisplayFor(Model => item.Customer.LName)
                 </td>
                 <td>
+                    @User.FindFirstValue("name")
                     @Html.DisplayFor(Model => item.Ticket.EmployeeId)
                 </td>
                 <td>
@@ -60,14 +61,23 @@
                     @Html.DisplayFor(Model => item.Ticket.Priority)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Ticket.Id" class="btn"><i class="fa-sharp fa-solid fa-pen-to-square d-inline"></i></a>
                     <a asp-action="Details" asp-route-id="@item.Ticket.Id" class="btn"><i class="fa-sharp fa-solid fa-circle-info d-inline"></i></a>
                     @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
-                    <form asp-action="Delete" asp-route-id="@item.Ticket.Id" class=" d-inline">
-                        <a class="btn">
-                            <i class="fa-sharp fa-solid fa-trash"></i>
-                        </a>
-                    </form>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Ticket.Id" class="btn"><i class="fa-sharp fa-solid fa-pen-to-square d-inline"></i></a>
+
+                        <form asp-route-id="@item.Ticket.Id" asp-action="Delete" class=" d-inline">
+                            <button class="btn"><i class="fa-sharp fa-solid fa-trash d-inline"></i></button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn" title="Higher Permissions Required"><i class="fa-sharp fa-solid fa-pen-to-square d-inline opacity-25"></i></a>
+
+                        <a class="btn" title="Higher Permissions Required"><i class="fa-sharp fa-solid fa-trash d-inline opacity-25"></i></a>
+                    }
+
                 </td>
             </tr>
         }

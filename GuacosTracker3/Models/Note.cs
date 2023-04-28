@@ -20,7 +20,7 @@ namespace GuacosTracker3.Models
         [Required]
         [ForeignKey("Employee")]
         [Display(Name = "Employee ID")]
-        public int EmployeeId { get; set; }
+        public string EmployeeId { get; set; }
 
         [Required]
         [Column(TypeName = "nvarchar(MAX)")]
