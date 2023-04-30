@@ -20,19 +20,21 @@
                 Customer
             </th>
             <th>
-                Employee ID
+                Title
             </th>
             <th>
                 Date
             </th>
-
             <th>
-                Title
+                Employee ID
             </th>
+
             <th>
                 Priority
             </th>
-            <th></th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -47,14 +49,15 @@
                     @Html.DisplayFor(Model => item.Customer.LName)
                 </td>
                 <td>
-                    @User.FindFirstValue("name")
-                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
+                    @Html.DisplayFor(Model => item.Ticket.Title)
                 </td>
                 <td>
                     @Html.DisplayFor(Model => item.Ticket.RecentChange)
                 </td>
+
+
                 <td>
-                    @Html.DisplayFor(Model => item.Ticket.Title)
+                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
                 </td>
 
                 <td>
