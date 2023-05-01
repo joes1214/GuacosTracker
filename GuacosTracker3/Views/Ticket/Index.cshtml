@@ -20,19 +20,21 @@
                 Customer
             </th>
             <th>
-                Employee ID
+                Title
             </th>
             <th>
                 Date
             </th>
-
             <th>
-                Title
+                Employee ID
             </th>
+
             <th>
                 Priority
             </th>
-            <th></th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -47,35 +49,36 @@
                     @Html.DisplayFor(Model => item.Customer.LName)
                 </td>
                 <td>
-                    @User.FindFirstValue("name")
-                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
+                    @Html.DisplayFor(Model => item.Ticket.Title)
                 </td>
                 <td>
                     @Html.DisplayFor(Model => item.Ticket.RecentChange)
                 </td>
+
+
                 <td>
-                    @Html.DisplayFor(Model => item.Ticket.Title)
+                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
                 </td>
 
                 <td>
                     @Html.DisplayFor(Model => item.Ticket.Priority)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Ticket.Id" class="btn"><i class="fa-sharp fa-solid fa-circle-info d-inline"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.Ticket.Id" class="btnx"><i class="mdi mdi-information-outline p-1"></i></a>
                     @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
                     @if (User.IsInRole("Admin"))
                     {
-                        <a asp-action="Edit" asp-route-id="@item.Ticket.Id" class="btn"><i class="fa-sharp fa-solid fa-pen-to-square d-inline"></i></a>
+                        <a asp-action="Edit" asp-route-id="@item.Ticket.Id" class="btnx"><i class="mdi mdi-pencil-box-outline p-1"></i></a>
 
-                        <form asp-route-id="@item.Ticket.Id" asp-action="Delete" class=" d-inline">
-                            <button class="btn"><i class="fa-sharp fa-solid fa-trash d-inline"></i></button>
+                        <form asp-route-id="@item.Ticket.Id" asp-action="Delete" class="d-inline p-1">
+                            <button class="text-danger"><i class="mdi mdi-trash-can-outline"></i></button>
                         </form>
                     }
                     else
                     {
-                        <a class="btn" title="Higher Permissions Required"><i class="fa-sharp fa-solid fa-pen-to-square d-inline opacity-25"></i></a>
+                        <a class="btn" title="Higher Permissions Required"><i class="mdi mdi-pencil-box-outline d-inline opacity-25 p-1"></i></a>
 
-                        <a class="btn" title="Higher Permissions Required"><i class="fa-sharp fa-solid fa-trash d-inline opacity-25"></i></a>
+                        <a class="btn" title="Higher Permissions Required"><i class="mdi mdi-trash-can-outline d-inline opacity-25 p-1"></i></a>
                     }
 
                 </td>
