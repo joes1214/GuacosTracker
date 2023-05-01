@@ -1,4 +1,5 @@
-﻿@model List<TicketViewModel>
+﻿@using GuacosTracker3.SharedData
+@model List<TicketViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,7 +8,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-controller="Customers" asp-action="Index">Create New</a>
+    <a asp-controller="Customer" asp-action="Index">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -19,54 +20,67 @@
                 Customer
             </th>
             <th>
-                Employee ID
+                Title
             </th>
             <th>
                 Date
             </th>
-
             <th>
-                Title
+                Employee ID
             </th>
+
             <th>
                 Priority
             </th>
-            <th></th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (TicketViewModel item in Model)
         {
-            <tr>
+            <tr class="@ProgressList.BgColor(item.Ticket.RecentStatus)">
                 <td>
-                    @Html.DisplayFor(Model => item.Ticket.Status)
+                    @Html.DisplayFor(Model => item.Ticket.RecentStatus)
                 </td>
                 <td>
                     @Html.DisplayFor(Model => item.Customer.FName)
                     @Html.DisplayFor(Model => item.Customer.LName)
                 </td>
                 <td>
-                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
-                </td>
-                <td>
-                    @Html.DisplayFor(Model => item.Ticket.Date)
-                </td>
-                <td>
                     @Html.DisplayFor(Model => item.Ticket.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(Model => item.Ticket.RecentChange)
+                </td>
+
+
+                <td>
+                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
                 </td>
 
                 <td>
                     @Html.DisplayFor(Model => item.Ticket.Priority)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Ticket.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Ticket.Id">Details</a> |
+                    <a asp-action="Details" asp-route-id="@item.Ticket.Id" class="btnx"><i class="mdi mdi-information-outline p-1"></i></a>
                     @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
-                    <form asp-action="Delete" asp-route-id="@item.Ticket.Id">
-                        <button type="submit">
-                            delete
-                        </button>
-                    </form>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Ticket.Id" class="btnx"><i class="mdi mdi-pencil-box-outline p-1"></i></a>
+
+                        <form asp-route-id="@item.Ticket.Id" asp-action="Delete" class="d-inline p-1">
+                            <button class="text-danger"><i class="mdi mdi-trash-can-outline"></i></button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn" title="Higher Permissions Required"><i class="mdi mdi-pencil-box-outline d-inline opacity-25 p-1"></i></a>
+
+                        <a class="btn" title="Higher Permissions Required"><i class="mdi mdi-trash-can-outline d-inline opacity-25 p-1"></i></a>
+                    }
+
                 </td>
             </tr>
         }

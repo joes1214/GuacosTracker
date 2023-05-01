@@ -76,15 +76,18 @@ namespace GuacosTracker3.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(MAX)");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<Guid>("TicketId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TicketId");
 
                     b.ToTable("Notes");
                 });
@@ -106,11 +109,18 @@ namespace GuacosTracker3.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(MAX)");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Priority")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("RecentChange")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecentStatus")
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -349,17 +359,6 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasDiscriminator().HasValue("TrackerUser");
-                });
-
-            modelBuilder.Entity("GuacosTracker3.Models.Note", b =>
-                {
-                    b.HasOne("GuacosTracker3.Models.Ticket", "Ticket")
-                        .WithMany()
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -10,7 +10,7 @@
 
 
 <div class="col-span-6">
-    <h2>Creating ticket for: <i>@Model.Customer.FName @Model.Customer.LName</i> ♥</h2>
+    <h2>Creating ticket for: @Model.Customer.FName @Model.Customer.LName</h2>
 </div>
 <hr />
 <div class="row">
@@ -24,25 +24,26 @@
             <input type="hidden" asp-for="Ticket.Customer" value="@Model.Customer.Id"/>
             <span asp-validation-for="Ticket.Customer" class="text-danger"></span>
 
-            <div class="form-group">
-                <label asp-for="Ticket.Title" class="control-label"></label>
+            <div class="form-group text-danger">(*) Required</div>
+
+            <div class="form-group mt-2">
+                <label asp-for="Ticket.Title" class="control-label"></label> <span class="text-danger">*</span>
                 <input asp-for="Ticket.Title" class="form-control" />
                 <span asp-validation-for="Ticket.Title" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 @*Will be pulled automatically*@
-                <label asp-for="Ticket.EmployeeId" class="control-label"></label>
-                <input asp-for="Ticket.EmployeeId" class="form-control" />
-                <span asp-validation-for="Ticket.EmployeeId" class="text-danger"></span>
+                @*<label asp-for="Ticket.EmployeeId" class="control-label"></label>**@
+                <input type="hidden" asp-for="Ticket.EmployeeId" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
             <div class="form-group">
-                <label asp-for="Ticket.Description" class="control-label"></label>
+                <label asp-for="Ticket.Description" class="control-label"></label> <span class="text-danger">*</span>
                 <textarea asp-for="Ticket.Description" class="form-control"></textarea>
                 <span asp-validation-for="Ticket.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Ticket.Status" class="control-label"></label>
+                <label asp-for="Ticket.Status" class="control-label"></label> <span class="text-danger">*</span>
                 @*<select asp-for="Ticket.Status" class="form-control" asp-items="Html.GetEnumSelectList<StatusList>()">*@
                 <select asp-for="Ticket.Status" class="form-control" asp-items="ProgressList.GetStatusList()">
                 </select> @*for drop down for status*@
@@ -69,4 +70,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    }
+}

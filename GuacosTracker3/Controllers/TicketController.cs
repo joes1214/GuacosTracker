@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GuacosTracker3.Models;
 using GuacosTracker3.Data;
-using GuacosTracker3.SharedData;
 using GuacosTracker3.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GuacosTracker3.Controllers
 {
+    [Authorize(Roles = "Employee, Manager, Admin")]
     public class TicketController : Controller
     {
         private readonly TrackerDbContext _context;
@@ -45,11 +41,6 @@ namespace GuacosTracker3.Controllers
             }
 
             return View(_ticketList);
-
-
-            //return _context.Ticket != null ? 
-            //            View(await _context.Ticket.ToListAsync()) :
-            //            Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
         }
 
         // GET: Tickets/Details/5
@@ -64,26 +55,89 @@ namespace GuacosTracker3.Controllers
 
             if (_ticket == null)
             {
-                return NotFound();
+                return RedirectToAction("Index");
+            }
+
+            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.Customer);
+
+            if (_customers == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            List<Note> _notes = await _context.Notes.Where(c => c.TicketId == _ticket.Id).ToListAsync();
+
+            TicketNoteCustomerViewModel _ticketNotesViewModel = new TicketNoteCustomerViewModel();
+
+            _ticketNotesViewModel.Ticket = _ticket;
+            _ticketNotesViewModel.Customer = _customers;
+            _ticketNotesViewModel.Note = new Note();
+            _ticketNotesViewModel.Notes = _notes;
+
+            return View(_ticketNotesViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Details(Guid? id, [Bind("Ticket, Customer, Note")] TicketNoteCustomerViewModel _ticketViewModel)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            Ticket _ticket = await _context.Ticket.SingleOrDefaultAsync(t => t.Id == id);
+            if (_ticket == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.Customer);
+            if (_customers == null)
+            {
+                return RedirectToAction("Index");
             }
 
 
-            return View(_ticket);
+            _ticketViewModel.Ticket = _ticket;
+            _ticketViewModel.Customer = _customers;
+
+            ModelState.Remove("Ticket");
+            ModelState.Remove("Customer");
+            ModelState.Remove("Notes");
+
+            if (ModelState.IsValid)
+            {
+                Note _note = new Note();
+                _note.TicketId = _ticket.Id;
+                _note.EmployeeId = _ticketViewModel.Note.EmployeeId;
+
+                _note.Description = _ticketViewModel.Note.Description;
+                _note.Status = _ticketViewModel.Note.Status;
+
+                _note.Date = DateTime.Now;
+
+                _context.Add(_note);
+                await _context.SaveChangesAsync();
+
+                _ticket.RecentStatus = _ticketViewModel.Note.Status;
+                _ticket.RecentChange = _note.Date;
+
+                _context.Update(_ticket);
+                await _context.SaveChangesAsync();
+            }
+
+            List<Note> _notes = await _context.Notes.Where(c => c.TicketId == id).ToListAsync();
+
+            TicketNoteCustomerViewModel _newTicketViewModel = new TicketNoteCustomerViewModel();
+
+            _newTicketViewModel.Ticket = _ticket;
+            _newTicketViewModel.Customer = _customers;
+            _newTicketViewModel.Note = new Note();
+            _newTicketViewModel.Notes = _notes;
+
+            return View(_newTicketViewModel);
         }
-
-        // GET: Tickets/Create
-        //[HttpGet]
-        //public IActionResult Create(int Id = 0)
-        //{
-        //    Customers _customer = _context.Customers.Find(Id);
-
-        //    if (Id == 0 || _customer == null)
-        //    {
-        //        return RedirectToAction(actionName: "Index", controllerName: "Customers");
-        //    }
-        //    return View(TicketFactory.Create(Id, new Ticket()));
-        //}
-
 
         // POST: Tickets/Create
         [HttpPost]
@@ -103,6 +157,7 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets/Edit/5
+        [Authorize(Roles = "Manager, Admin")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.Ticket == null)
@@ -155,15 +210,18 @@ namespace GuacosTracker3.Controllers
         }
 
         // POST: Tickets/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
-            if (_context.Ticket == null)
+            if (id == null || _context.Ticket== null)
             {
                 return Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
             }
-            var ticket = await _context.Ticket.FindAsync(id);
+
+            var ticket = await _context.Ticket
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket != null)
             {
                 _context.Ticket.Remove(ticket);
