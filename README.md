@@ -1,13 +1,21 @@
+
 # Guaco's Tracker
-This is my first major project using C# and ASP.NET. 
+First major project using C# and ASP.NET. 
 
 ## What is Guaco's Tracker?
-It is a ticket tracker. Guaco's Tracker features 3 different models: 
-* Customer
-* Ticket
-* Note
+**Guaco is a professional at tracking support tickets!**
 
-All of these hold important information one would need to keep track and organize their needs.
+Main features of this program:
+ - Utilizes Auth0
+ - Three different user groups exist: Employee, Manager, and Admin
+ - Each group can perform different important actions. Namely edit and delete existing tickets
+ - Every ticket can be given notes to give further context with every update
+
+TODO:
+ * Add Searching capabilites
+ * Improve database functionality
+ * Customizable settings
+ * _These are all I can think of_
 
 ## Authentication
 In order to create a safe and secure login, I used [Auth0](https://auth0.com/) to handle authentication, authorization, and role management.
