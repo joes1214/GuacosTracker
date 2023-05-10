@@ -74,8 +74,11 @@
                 <span asp-validation-for="Note.Description" class="text-danger"></span>
             </div>
             <div>
+
+            </div>
+            <div>
                 <label asp-for="Note.Status" class="control-label"></label>*
-                <select asp-for="Note.Status" class="form-control" asp-items="ProgressList.GetStatusList()">
+                <select asp-for="Note.Status" class="form-control" asp-items="ProgressList.StatusStringSelect">
                 </select>
                 <span asp-validation-for="Note.Status" class="text-danger"></span>
             </div>

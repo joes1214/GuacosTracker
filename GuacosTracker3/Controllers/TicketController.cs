@@ -4,6 +4,7 @@ using GuacosTracker3.Models;
 using GuacosTracker3.Data;
 using GuacosTracker3.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using GuacosTracker3.SharedData;
 
 namespace GuacosTracker3.Controllers
 {
@@ -18,21 +19,52 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool ShowHidden = false)
         {
             if (_context.Ticket == null)
             {
                 Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
+                return View();
             }
 
-            List<TicketViewModel> _ticketList = new List<TicketViewModel>();
+            //Use this value
+            /*List<Ticket> filteredItems = _context.Ticket.Where(x => x.Hidden != true).ToList();*/
+            List<Ticket> filteredItems = _context.Ticket
+                .Where(x => x.Hidden != true)
+                .OrderByDescending(x => x.Date)
+                .ToList();
 
-            TicketViewModel _ticketViewModel = new TicketViewModel();
-            Customer _customer = new Customer();
+            _ = filteredItems.GroupBy(status => status.RecentStatus)
+                .OrderBy(group => ProgressList.GetStatusOrder.IndexOf(group.Key)).ToList();
 
-            List<Ticket> tickets = await _context.Ticket.ToListAsync();
+/*            _ = filteredItems.OrderByDescending(x => x.Date).ToList();*/
 
-            foreach (Ticket item in tickets)
+            /*            List<Ticket> AwaitRepairItems = filteredItems.Where(x => x.RecentStatus.Equals("Awaiting Repair")).ToList();
+                        List<Ticket> AwaitCustomerItems = filteredItems.Where(x => x.RecentStatus.Equals("Awaiting Customer")).ToList();
+                        List<Ticket> InProgressItems = filteredItems.Where(x => x.RecentStatus.Equals("In-Progress")).ToList();
+                        List<Ticket> CompletedItems = filteredItems.Where(x => x.RecentStatus.Equals("Completed")).ToList();
+                        List<Ticket> UnrepairableItems = filteredItems.Where(x => x.RecentStatus.Equals("Unrepairable")).ToList();
+
+                        List<Ticket> SortedItems = new();
+
+                        SortedItems.AddRange(AwaitRepairItems.OrderByDescending(x => x.Date));
+                        SortedItems.AddRange(AwaitCustomerItems.OrderByDescending(x => x.Date));
+                        SortedItems.AddRange(InProgressItems.OrderByDescending(x => x.Date));
+                        SortedItems.AddRange(CompletedItems.OrderByDescending(x => x.Date));
+                        SortedItems.AddRange(UnrepairableItems.OrderByDescending(x => x.Date));*/
+
+
+            List<TicketViewModel> _ticketList = new();
+
+            TicketViewModel _ticketViewModel = new();
+            Customer _customer = new();
+
+            /*List<Ticket> tickets = filteredItems;*/
+            /*List<Ticket> tickets = SortedItems;*/
+
+
+
+            foreach (Ticket item in filteredItems)
             {
                 _ticketViewModel.Ticket = item;
                 _ticketViewModel.Customer = await _context.Customers.FindAsync(item.Customer);
@@ -178,7 +210,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,zTitle,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,EmployeeId,Date,Description,Status,Priority,Customer,Hidden")] Ticket ticket)
         {
             if (id != ticket.Id)
             {
@@ -189,6 +221,7 @@ namespace GuacosTracker3.Controllers
             {
                 try
                 {
+                    ticket.RecentStatus = ticket.Status;
                     //ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
