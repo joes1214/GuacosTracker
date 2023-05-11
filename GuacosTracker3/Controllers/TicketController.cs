@@ -5,6 +5,7 @@ using GuacosTracker3.Data;
 using GuacosTracker3.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using GuacosTracker3.SharedData;
+using System.Collections.Generic;
 
 namespace GuacosTracker3.Controllers
 {
@@ -27,42 +28,22 @@ namespace GuacosTracker3.Controllers
                 return View();
             }
 
-            //Use this value
-            /*List<Ticket> filteredItems = _context.Ticket.Where(x => x.Hidden != true).ToList();*/
-            List<Ticket> filteredItems = _context.Ticket
-                .Where(x => x.Hidden != true)
-                .OrderByDescending(x => x.Date)
+            List<Ticket> visibleItems = _context.Ticket.Where(x => x.Hidden != true).ToList();
+
+            //Maybe combine Awaiting Repair and Customer?
+            Dictionary<string, List<Ticket>> groupedItems = visibleItems
+                .GroupBy(ticket => ticket.RecentStatus)
+                .ToLookup(group => group.Key, group => group.OrderBy(ticket => ticket.RecentChange).ToList()!)
+                .ToDictionary(lookup => lookup.Key, lookup => lookup.First()!);
+
+            List<Ticket> filteredItems = ProgressList.GetStatusOrder
+                .SelectMany(status => groupedItems.ContainsKey(status) ? groupedItems[status] : new List<Ticket>())
                 .ToList();
-
-            _ = filteredItems.GroupBy(status => status.RecentStatus)
-                .OrderBy(group => ProgressList.GetStatusOrder.IndexOf(group.Key)).ToList();
-
-/*            _ = filteredItems.OrderByDescending(x => x.Date).ToList();*/
-
-            /*            List<Ticket> AwaitRepairItems = filteredItems.Where(x => x.RecentStatus.Equals("Awaiting Repair")).ToList();
-                        List<Ticket> AwaitCustomerItems = filteredItems.Where(x => x.RecentStatus.Equals("Awaiting Customer")).ToList();
-                        List<Ticket> InProgressItems = filteredItems.Where(x => x.RecentStatus.Equals("In-Progress")).ToList();
-                        List<Ticket> CompletedItems = filteredItems.Where(x => x.RecentStatus.Equals("Completed")).ToList();
-                        List<Ticket> UnrepairableItems = filteredItems.Where(x => x.RecentStatus.Equals("Unrepairable")).ToList();
-
-                        List<Ticket> SortedItems = new();
-
-                        SortedItems.AddRange(AwaitRepairItems.OrderByDescending(x => x.Date));
-                        SortedItems.AddRange(AwaitCustomerItems.OrderByDescending(x => x.Date));
-                        SortedItems.AddRange(InProgressItems.OrderByDescending(x => x.Date));
-                        SortedItems.AddRange(CompletedItems.OrderByDescending(x => x.Date));
-                        SortedItems.AddRange(UnrepairableItems.OrderByDescending(x => x.Date));*/
-
 
             List<TicketViewModel> _ticketList = new();
 
             TicketViewModel _ticketViewModel = new();
             Customer _customer = new();
-
-            /*List<Ticket> tickets = filteredItems;*/
-            /*List<Ticket> tickets = SortedItems;*/
-
-
 
             foreach (Ticket item in filteredItems)
             {
