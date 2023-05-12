@@ -23,6 +23,11 @@ namespace GuacosTracker3.SharedData
 
         public static string BgColor(string Status)
         {
+            if (Status == null)
+            {
+                return "ERROR";
+            }
+
             if (Status.Equals("Awaiting Repair") || Status.Equals("Awaiting Customer"))
             {
                 return "table-warning";
