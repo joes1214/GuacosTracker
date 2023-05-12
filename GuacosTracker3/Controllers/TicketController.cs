@@ -178,7 +178,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,zTitle,EmployeeId,Date,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,EmployeeId,Date,Description,Status,Priority,Customer")] Ticket ticket)
         {
             if (id != ticket.Id)
             {
@@ -189,7 +189,7 @@ namespace GuacosTracker3.Controllers
             {
                 try
                 {
-                    //ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
+                    ticket.RecentStatus = ticket.Status;
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
