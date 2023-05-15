@@ -33,11 +33,12 @@ namespace GuacosTracker3.Controllers
         [Authorize]
         public IActionResult Profile()
         {
-            Account account = new Account();
+            Account account = new();
 
             account.id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            account.Name = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-            account.Email = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+
+            account.Name = User.Identity?.Name;
+            account.Email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value.ToString();
             account.Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             account.Picture = User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
 

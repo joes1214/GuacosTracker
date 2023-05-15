@@ -20,7 +20,7 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index(bool ShowHidden = false)
+        public async Task<IActionResult> Index(bool ShowHidden = false, int MaxDisplay = 1, string SearchTerm = "")
         {
             if (_context.Ticket == null)
             {
@@ -33,7 +33,7 @@ namespace GuacosTracker3.Controllers
             //Maybe combine Awaiting Repair and Customer?
             Dictionary<string, List<Ticket>> groupedItems = visibleItems
                 .GroupBy(ticket => ticket.RecentStatus)
-                .ToLookup(group => group.Key, group => group.OrderBy(ticket => ticket.RecentChange).ToList()!)
+                .ToLookup(group => group.Key, group => group.OrderByDescending(ticket => ticket.RecentChange).ToList()!)
                 .ToDictionary(lookup => lookup.Key, lookup => lookup.First()!);
 
             List<Ticket> filteredItems = ProgressList.GetStatusOrder

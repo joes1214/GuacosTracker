@@ -45,7 +45,7 @@
             <div class="form-group">
                 <label asp-for="Ticket.Status" class="control-label"></label> <span class="text-danger">*</span>
                 @*<select asp-for="Ticket.Status" class="form-control" asp-items="Html.GetEnumSelectList<StatusList>()">*@
-                <select asp-for="Ticket.Status" class="form-control" asp-items="ProgressList.GetStatusList()">
+                <select asp-for="Ticket.Status" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
                 </select> @*for drop down for status*@
                 @*<input asp-for="Status" class="form-control" />*@
                 <span asp-validation-for="Ticket.Status" class="text-danger"></span>
