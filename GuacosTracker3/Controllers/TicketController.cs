@@ -203,7 +203,6 @@ namespace GuacosTracker3.Controllers
                 try
                 {
                     ticket.RecentStatus = ticket.Status;
-                    //ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
