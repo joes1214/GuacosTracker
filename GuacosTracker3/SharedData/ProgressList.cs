@@ -33,13 +33,7 @@ namespace GuacosTracker3.SharedData
 
         public static List<SelectListItem> GetStatusListOpen()
         {
-            if (Status == null)
-            {
-                return "ERROR";
-            }
-
-            if (Status.Equals("Awaiting Repair") || Status.Equals("Awaiting Customer"))
-            {
+            return new List<SelectListItem> {
                 new SelectListItem { Text = "Awaiting Repair", Value = "Awaiting Repair" },
                 new SelectListItem { Text = "In-Progress", Value = "In-Progress" },
                 new SelectListItem { Text = "Awaiting Customer", Value = "Awaiting Customer" },
