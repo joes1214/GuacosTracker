@@ -4,6 +4,7 @@ using GuacosTracker3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuacosTracker3.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    partial class TrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230509232936_Add Hidden to Ticket")]
+    partial class AddHiddentoTicket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,7 +125,6 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RecentStatus")
-                        .IsRequired()
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("Status")

@@ -4,6 +4,8 @@ using GuacosTracker3.Models;
 using GuacosTracker3.Data;
 using GuacosTracker3.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using GuacosTracker3.SharedData;
+using System.Collections.Generic;
 
 namespace GuacosTracker3.Controllers
 {
@@ -18,21 +20,32 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool ShowHidden = false, int MaxDisplay = 1, string SearchTerm = "")
         {
             if (_context.Ticket == null)
             {
                 Problem("Entity set 'TrackerDbContext.Ticket'  is null.");
+                return View();
             }
 
-            List<TicketViewModel> _ticketList = new List<TicketViewModel>();
+            List<Ticket> visibleItems = _context.Ticket.Where(x => x.Hidden != true).ToList();
 
-            TicketViewModel _ticketViewModel = new TicketViewModel();
-            Customer _customer = new Customer();
+            //Maybe combine Awaiting Repair and Customer?
+            Dictionary<string, List<Ticket>> groupedItems = visibleItems
+                .GroupBy(ticket => ticket.RecentStatus)
+                .ToLookup(group => group.Key, group => group.OrderByDescending(ticket => ticket.RecentChange).ToList()!)
+                .ToDictionary(lookup => lookup.Key, lookup => lookup.First()!);
 
-            List<Ticket> tickets = await _context.Ticket.ToListAsync();
+            List<Ticket> filteredItems = ProgressList.GetStatusOrder
+                .SelectMany(status => groupedItems.ContainsKey(status) ? groupedItems[status] : new List<Ticket>())
+                .ToList();
 
-            foreach (Ticket item in tickets)
+            List<TicketViewModel> _ticketList = new();
+
+            TicketViewModel _ticketViewModel = new();
+            Customer _customer = new();
+
+            foreach (Ticket item in filteredItems)
             {
                 _ticketViewModel.Ticket = item;
                 _ticketViewModel.Customer = await _context.Customers.FindAsync(item.Customer);
@@ -178,7 +191,7 @@ namespace GuacosTracker3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,EmployeeId,Date,Description,Status,Priority,Customer")] Ticket ticket)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,EmployeeId,Date,Description,Status,Priority,Customer,Hidden")] Ticket ticket)
         {
             if (id != ticket.Id)
             {
