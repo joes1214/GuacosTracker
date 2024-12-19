@@ -1,5 +1,5 @@
 ﻿@{
-    string? currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    ViewData["currentController"] = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 
 <!DOCTYPE html>
@@ -12,6 +12,7 @@
 
     <link href="https://fonts.googleapis.com/css?family=Karla:400,700|Roboto" rel="stylesheet">
 
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link id="main-css-href" rel="stylesheet" href="~/css/style.css" />
 </head>
 
@@ -19,62 +20,13 @@
     <div id="toaster"></div>
 
     <div class="wrapper">
-        <aside class="left-sidebar sidebar-dark" id="left-sidebar">
-            <div id="sidebar" class="sidebar sidebar-with-footer">
-                <div class="app-brand">
-                    <a asp-area="" asp-controller="Home" asp-action="Index">
-                        <span class="brand-name">Guaco's Tracker</span>
-                    </a>
-                </div>
-
-                <div class="sidebar-left" data-simplebar style="height: 100%;">
-                    <ul class="nav sidebar-inner" id="sidebar-menu">
-                        <li class="@(currentController.Equals("Home") ? "active" : "")">
-                            <a class="sidenav-item-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                <i class="mdi mdi-home"></i>
-                                <span class="nav-text">Home</span>
-                            </a>
-                        </li>
-
-                        <li class="@(currentController.Equals("Customer") ? "active" : "")">
-                            <a class="sidenav-item-link" asp-area="" asp-controller="Customer" asp-action="Index">
-                                <i class="mdi mdi-account-group"></i>
-                                <span class="nav-text">Customers</span>
-                            </a>
-                        </li>
-
-                        <li class="@(currentController.Equals("Ticket") ? "active" : "")">
-                            <a class="sidenav-item-link" asp-area="" asp-controller="Ticket" asp-action="Index">
-                                <i class="mdi mdi-ticket-outline"></i>
-                                <span class="nav-text">Tickets</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-footer">
-
-                    
-                    <div class="sidebar-footer-content">
-                        <partial name="_LoginPartial" />
-                    </div>
-                </div>
-            </div>
-        </aside>
+        <partial name="_NavbarPartial" model=@ViewData["currentController"] />
 
         <div class="page-wrapper">
             <header class="main-header" id="header">
-                <nav class="navbar navbar-expand-lg navbar-light" id="navbar">
-                    <button id="sidebar-toggler" class="sidebar-toggle">
-                        <span class="sr-only">Toggle navigation</span>
-                    </button>
-
+                <nav class="navbar navbar-expand-lg navbar-light px-3" id="navbar">
                     <span class="page-title">dashboard</span>
-
-                    <div class="navbar-right"></div>
                 </nav>
-
-
             </header>
 
             <div class="content">
@@ -99,8 +51,7 @@
     </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

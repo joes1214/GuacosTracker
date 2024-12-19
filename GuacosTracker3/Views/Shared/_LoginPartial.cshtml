@@ -5,27 +5,28 @@
 @inject UserManager<TrackerUser> UserManager
 
 <ul class="d-flex">
-
     @if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value != null)
     {
-        <li class="">
-            <a class="nav-link text-light" asp-controller="Account" asp-action="Profile"><i class="mdi mdi-account-circle"></i></a>
+        <li class="p-1">
+            <a class="nav-link text-light" asp-controller="Account" asp-action="Profile">
+                <img src="~/svg/icons/account-circle-outline.svg" height="24" width="24" class="fill-white me-2" />
+            </a>
         </li>
 
-        <li class="">
-            <a class="nav-link text-light" asp-controller="Account" asp-action="Logout"><i class="mdi mdi-logout"></i></a>
+        <li class="p-1">
+            <a class="nav-link text-light" asp-controller="Account" asp-action="Logout">
+                <img src="~/svg/icons/logout.svg" height="24" width="24" class="fill-white me-2" />
+            </a>
         </li>
 
     }
     else
     {
         <li class="w-100 align-items-center">
-            <a class="btn btn-secondary text-white" asp-controller="Account" asp-action="Login">
-                <i class="mdi mdi-login"></i>
+            <a class="btn btn-secondary text-white p-2" asp-controller="Account" asp-action="Login">
+                <img src="~/svg/icons/login.svg" height="24" width="24" class="fill-white me-2" />
                 <span>Login</span>
             </a>
         </li>
-        
     }
 </ul>
-
