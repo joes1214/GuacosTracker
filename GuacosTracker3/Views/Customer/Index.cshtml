@@ -62,13 +62,13 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td colspan="2">
-                    <a asp-action="CreateTicket" asp-route-id="@item.Id" type="submit" value="Create" class="btn btn-sm btn-primary">
-                        <i class="mdi mdi-ticket"></i>
-                    </a>
-
-                    <a asp-action="Edit" asp-route-id="@item.Id"><i class="mdi mdi-pencil-box-outline d-inline p-1"></i></a>
-                    <a asp-action="Details" asp-route-id="@item.Id"><i class="mdi mdi-information-outline d-inline p-1"></i></a>
-                    <a asp-action="Delete" asp-route-id="@item.Id"><i class="mdi mdi-trash-can-outline d-inline text-danger"></i></a>
+                    <a asp-action="CreateTicket" asp-route-id="@item.Id" type="submit" value="Create">Create</a>
+                    |
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger">Delete</a>
                 </td>
 @*                <td>
                     <a asp-action="Edit" asp-route-id="@item.Id"><i class="mdi mdi-pencil-box-outline d-inline p-1"></i></a>
