@@ -1,0 +1,41 @@
+﻿@model string
+<aside class="left-sidebar sidebar-dark" id="left-sidebar">
+    <div id="sidebar" class="sidebar sidebar-with-footer">
+        <div class="app-brand">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <span class="brand-name">Guaco's Tracker</span>
+            </a>
+        </div>
+
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="height: 100%;">
+            <ul class="nav sidebar-inner" id="sidebar-menu">
+                <li class="@(Model.Equals("Home") ? "active" : "")">
+                    <a class="sidenav-item-link rounded-3" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/svg/icons/home-variant-outline.svg" height="24" width="24" class="fill-white me-2" />
+                        <span class="nav-text">Home</span>
+                    </a>
+                </li>
+
+                <li class="@(Model.Equals("Customer") ? "active" : "")">
+                    <a class="sidenav-item-link rounded-3" asp-area="" asp-controller="Customer" asp-action="Index">
+                        <img src="~/svg/icons/account-group.svg" height="24" width="24" class="fill-white me-2" />
+                        <span class="nav-text">Customers</span>
+                    </a>
+                </li>
+
+                <li class="@(Model.Equals("Ticket") ? "active" : "")">
+                    <a class="sidenav-item-link rounded-3" asp-area="" asp-controller="Ticket" asp-action="Index">
+                        <img src="~/svg/icons/ticket-outline.svg" height="24" width="24" class="fill-white me-2" />
+                        <span class="nav-text">Tickets</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-content">
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </div>
+</aside>
