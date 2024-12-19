@@ -109,7 +109,7 @@ namespace GuacosTracker3.Controllers
         {
             if (ModelState.IsValid)
             {
-                Ticket ticket = new Ticket();
+                Ticket ticket = new();
 
                 ticket.Title = _ticketViewModel.Ticket.Title;
                 ticket.EmployeeId = _ticketViewModel.Ticket.EmployeeId; //Find how to grab through Auth

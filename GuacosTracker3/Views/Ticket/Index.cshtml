@@ -5,11 +5,38 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-controller="Customer" asp-action="Index">Create New</a>
-</p>
+
+<div id="ticket-index-header">
+    <h1 class="text-center pb-5">Active Tickets</h1>
+
+    <div class="d-flex justify-content-between">
+        <p>
+            <a asp-controller="Customer" asp-action="Index">Create New</a>
+        </p>
+
+        <div class="d-flex">
+            <div class="col input-group-sm">
+                <label for="list-max">Results per page:</label>
+                <select name="list-max" class="form-control" id="dl-page-load">
+                    <option value="1">1</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+
+                </select>
+            </div>
+
+            <div class="col input-group-sm">
+                <label for="show-hidden">Show Hidden:</label>
+                <input type="checkbox" class="form-control" id="show-hidden" value="true" />
+            </div>
+        </div>
+    </div>
+</div>
+
 <table class="table">
     <thead>
         <tr>

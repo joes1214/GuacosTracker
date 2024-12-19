@@ -48,5 +48,8 @@ namespace GuacosTracker3.Models
 
         //Relations
         public int Customer { get; set; }
+
+        //Hides instead of deletes
+        public bool Hidden { get; set; } = false;
     }
 }
