@@ -10,6 +10,7 @@ using GuacosTracker3.Data;
 using GuacosTracker3.Models.ViewModels;
 using GuacosTracker3.SharedData;
 using Microsoft.AspNetCore.Authorization;
+using System.Reflection;
 
 namespace GuacosTracker3.Controllers
 {
@@ -17,6 +18,29 @@ namespace GuacosTracker3.Controllers
     public class CustomerController : Controller
     {
         private readonly TrackerDbContext _context;
+        private string _title = "Customer";
+        private string _subtitle = "";
+
+        [ViewData]
+        public string Page
+        {
+            get {
+                if (_subtitle != "")
+                {
+                    string title = string.Format("{0} - {1}", _title, _subtitle);
+                    return title;
+                }
+                return _title; 
+            }
+
+            set { _title = value; }
+        }
+
+        public string Subtitle
+        {
+            get { return _subtitle; }
+            set { _subtitle = value; }
+        }
 
         public CustomerController(TrackerDbContext context)
         {
@@ -26,7 +50,7 @@ namespace GuacosTracker3.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-              return _context.Customers != null ? 
+            return _context.Customers != null ? 
                           View(await _context.Customers.ToListAsync()) :
                           Problem("Entity set 'TrackerDbContext.Customers'  is null.");
         }
@@ -34,6 +58,7 @@ namespace GuacosTracker3.Controllers
         // GET: Customers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            Subtitle = "Details";
             if (id == null)
             {
                 return NotFound();

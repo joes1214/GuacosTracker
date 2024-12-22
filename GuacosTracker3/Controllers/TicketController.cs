@@ -13,6 +13,30 @@ namespace GuacosTracker3.Controllers
     public class TicketController : Controller
     {
         private readonly TrackerDbContext _context;
+        private string _title = "Tickets";
+        private string _subtitle = "";
+
+        [ViewData]
+        public string Page
+        {
+            get
+            {
+                if (_subtitle != "")
+                {
+                    string title = string.Format("{0} - {1}", _title, _subtitle);
+                    return title;
+                }
+                return _title;
+            }
+
+            set { _title = value; }
+        }
+
+        public string Subtitle
+        {
+            get { return _subtitle; }
+            set { _subtitle = value; }
+        }
 
         public TicketController(TrackerDbContext context)
         {
