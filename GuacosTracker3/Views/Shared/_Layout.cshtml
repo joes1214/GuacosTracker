@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["currentController"] = ViewContext.RouteData.Values["controller"]?.ToString();
+    ViewData["Page"] = ViewData["page"]?.ToString();
 }
 
 <!DOCTYPE html>
@@ -7,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GuacosTracker3</title>
+    <title>@ViewData["Page"]</title>
     <meta name="theme-name" content="mono" />
 
     <link href="https://fonts.googleapis.com/css?family=Karla:400,700|Roboto" rel="stylesheet">
