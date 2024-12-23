@@ -19,7 +19,7 @@ namespace GuacosTracker3.Controllers
     public class CustomerController : Controller
     {
         private readonly TrackerDbContext _context;
-        private string _title = "Customer";
+        private string _title = "Customers";
         private string _subtitle = "";
 
         [ViewData]

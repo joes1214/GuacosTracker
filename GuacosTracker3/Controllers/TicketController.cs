@@ -87,6 +87,8 @@ namespace GuacosTracker3.Controllers
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
+            Subtitle = "Details";
+
             if (id == null)
             {
                 return RedirectToAction("Index");
