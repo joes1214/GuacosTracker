@@ -1,14 +1,47 @@
-﻿@model IEnumerable<GuacosTracker3.Models.Customer>
-
-@{
-    ViewData["Title"] = "Index";
-}
+﻿@using static GuacosTracker3.Utilities.Pagination
+@model PaginatedList<GuacosTracker3.Models.Customer>
 
 <h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<div>
+    @{
+        string hasPreviousPage = !Model.HasPreviousPage ? "disabled" : "";
+        string hasNextPage = !Model.HasNextPage ? "disabled" : "";
+    }
+    <a asp-action="Index"
+       asp-route-pageNum="1"
+       class="btn btn-default @hasPreviousPage">
+        &lt; &lt;
+    </a>
+
+    <a asp-action="Index"
+       asp-route-pageNum="@(Model.PageIndex - 1)"
+       class="btn btn-default @hasPreviousPage">
+        Previous
+    </a>
+
+    Page
+    @Model.PageIndex
+    of
+    @Model.TotalPages
+
+    <a asp-action="Index"
+       asp-route-pageNum="@(Model.PageIndex + 1)"
+       class="btn btn-default @hasNextPage">
+        Next
+    </a>
+
+    <a asp-action="Index"
+       asp-route-pageNum="@(Model.TotalPages)"
+       class="btn btn-default @hasNextPage">
+        &gt; &gt;
+    </a>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -16,10 +49,10 @@
                 ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FName)
+                First
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LName)
+                Last
             </th>
 @*            <th>
                 @Html.DisplayNameFor(model => model.Address)

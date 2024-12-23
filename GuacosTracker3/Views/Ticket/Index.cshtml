@@ -1,9 +1,6 @@
 ﻿@using GuacosTracker3.SharedData
-@model List<TicketViewModel>
-
-@{
-    ViewData["Title"] = "Index";
-}
+@using static GuacosTracker3.Utilities.Pagination
+@model PaginatedList<GuacosTracker3.Models.ViewModels.TicketViewModel>
 
 <div id="ticket-index-header">
     <h1 class="text-center pb-5">Active Tickets</h1>
@@ -32,6 +29,41 @@
             </div>
         </div>
     </div>
+</div>
+
+<div>
+    @{
+        string hasPreviousPage = !Model.HasPreviousPage ? "disabled" : "";
+        string hasNextPage = !Model.HasNextPage ? "disabled" : "";
+    }
+    <a asp-action="Index"
+       asp-route-pageNum="1"
+       class="btn btn-default @hasPreviousPage">
+        &lt; &lt;
+    </a>
+
+    <a asp-action="Index"
+       asp-route-pageNum="@(Model.PageIndex - 1)"
+       class="btn btn-default @hasPreviousPage">
+        Previous
+    </a>
+
+    Page
+    @Model.PageIndex
+    of
+    @Model.TotalPages
+
+    <a asp-action="Index"
+       asp-route-pageNum="@(Model.PageIndex + 1)"
+       class="btn btn-default @hasNextPage">
+        Next
+    </a>
+
+    <a asp-action="Index"
+       asp-route-pageNum="@(Model.TotalPages)"
+       class="btn btn-default @hasNextPage">
+        &gt; &gt;
+    </a>
 </div>
 
 <table class="table">

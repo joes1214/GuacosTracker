@@ -11,6 +11,7 @@ using GuacosTracker3.Models.ViewModels;
 using GuacosTracker3.SharedData;
 using Microsoft.AspNetCore.Authorization;
 using System.Reflection;
+using static GuacosTracker3.Utilities.Pagination;
 
 namespace GuacosTracker3.Controllers
 {
@@ -48,11 +49,13 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNum)
         {
-            return _context.Customers != null ? 
-                          View(await _context.Customers.ToListAsync()) :
-                          Problem("Entity set 'TrackerDbContext.Customers'  is null.");
+            List<Customer> customerList = await _context.Customers.ToListAsync();
+
+            int pageSize = 15;
+
+            return View(PaginatedList<Customer>.CreatePagination(customerList, pageNum ?? 1, pageSize));
         }
 
         // GET: Customers/Details/5
