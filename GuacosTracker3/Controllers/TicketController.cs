@@ -6,6 +6,8 @@ using GuacosTracker3.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using GuacosTracker3.SharedData;
 using System.Collections.Generic;
+using static GuacosTracker3.Utilities.Pagination;
+using System.Drawing.Printing;
 
 namespace GuacosTracker3.Controllers
 {
@@ -44,7 +46,7 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index(bool ShowHidden = false, int MaxDisplay = 1, string SearchTerm = "")
+        public async Task<IActionResult> Index(int? pageNum)
         {
             if (_context.Ticket == null)
             {
@@ -77,7 +79,9 @@ namespace GuacosTracker3.Controllers
                 _ticketViewModel = new TicketViewModel();
             }
 
-            return View(_ticketList);
+            int pageSize = 15;
+
+            return View(PaginatedList<TicketViewModel>.CreatePagination(_ticketList, pageNum ?? 1, pageSize));
         }
 
         // GET: Tickets/Details/5
