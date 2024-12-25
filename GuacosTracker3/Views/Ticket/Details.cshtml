@@ -1,65 +1,72 @@
 ﻿@using GuacosTracker3.SharedData
 @model TicketNoteCustomerViewModel
 
-@{
-    ViewData["Title"] = "Details";
-}
+<div class="row my-3">
+    <div class="col">
+        <h2>
+            @Html.DisplayFor(model => model.Ticket.Title)
+        </h2>
+    </div>
+</div>
 
-<h1>Details</h1>
-
-<div class="">
-
-    <h4>
-        Ticket: @Html.DisplayFor(model => model.Ticket.Title)
-    </h4>
-
-
+<div class="row my-3">
     <div class="col-md-6">
-        <table class="table table-bordered mt-2">
+        <table class="table mb-3">
             <tbody>
-                <tr class="table-active">
+                <tr class="table-activex">
                     <th>@Html.DisplayNameFor(model => model.Ticket.Id):</th>
                     <td>@Html.DisplayFor(model => model.Ticket.Id)</td>
                 </tr>
-                <tr class="table-active">
+                <tr class="table-activex">
                     <th>Customer:</th>
                     <td>
                         @Html.DisplayFor(model => model.Customer.LName),
                         @Html.DisplayFor(model => model.Customer.FName)
                     </td>
                 </tr>
-                <tr class="table-active">
+                <tr class="table-activex">
                     <th>@Html.DisplayNameFor(model => model.Ticket.Date):</th>
                     <td>@Html.DisplayFor(model => model.Ticket.Date)</td>
                 </tr>
-                <tr class="table-active">
+                <tr class="table-activex">
                     <th>@Html.DisplayNameFor(model => model.Ticket.EmployeeId):</th>
                     <td colspan="3">@Html.DisplayFor(model => model.Ticket.EmployeeId)</td>
                 </tr>
-                <tr class="table-default">
-                    <td colspan="4">
-                        <textarea class="form-control" readonly>@Html.DisplayFor(model => model.Ticket.Description)</textarea>
-                    </td>
-                </tr>
             </tbody>
         </table>
+
+        <textarea class="form-control" readonly>@Html.DisplayFor(model => model.Ticket.Description)</textarea>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Ticket.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="row my-3">
+    <div class="col">
+        <a asp-action="Edit" asp-route-id="@Model?.Ticket.Id">Edit</a>
+    </div>
 </div>
 
-<div class="mt-4">
-    <h4>Notes</h4>
-    <hr />
+<div class="row my-3">
+    <div class="col">
+        <hr />
+    </div>
 </div>
 
-<div class="">
-    <h5>Add Note:</h5>
+<div class="row my-3">
+    <div class="col">
+        <h3>Notes</h3>
+    </div>
+</div>
+
+<div class="row my-3">
+    <div class="col">
+        <h4>Add Note</h4>
+    </div>
+</div>
+
+<div class="row my-3">
     <div class="col-md-6">
-        <form asp-action="Details">
+        <form asp-action="Details" class="d-flex flex-column gap-2">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div>
                 <input type="hidden" asp-for="Ticket" value="@Model.Ticket.Id" />
@@ -73,9 +80,7 @@
                 <textarea asp-for="Note.Description" class="form-control"></textarea>
                 <span asp-validation-for="Note.Description" class="text-danger"></span>
             </div>
-            <div>
 
-            </div>
             <div>
                 <label asp-for="Note.Status" class="control-label"></label>*
                 <select asp-for="Note.Status" class="form-control" asp-items="ProgressList.GetStatusList()">
@@ -87,10 +92,15 @@
             </div>
         </form>
     </div>
-    <hr />
 </div>
 
-<div class="row">
+<div class="row my-3">
+    <div class="col">
+        <hr />
+    </div>
+</div>
+
+<div class="row my-3">
     <div class="col-md-6">
         <table class="table table-bordered mt-2">
             <thead>
