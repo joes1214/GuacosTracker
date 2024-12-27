@@ -88,6 +88,7 @@ namespace GuacosTracker3.Controllers
         // GET: Customers/Create
         public IActionResult Create()
         {
+            Subtitle = "Create";
             return View();
         }
 
@@ -163,6 +164,7 @@ namespace GuacosTracker3.Controllers
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Subtitle = "Edit";
             if (id == null || _context.Customers == null)
             {
                 return NotFound();
