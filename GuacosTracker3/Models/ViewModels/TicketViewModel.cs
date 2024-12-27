@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using static GuacosTracker3.Utilities.Pagination;
 
 namespace GuacosTracker3.Models.ViewModels
 {
@@ -7,7 +8,7 @@ namespace GuacosTracker3.Models.ViewModels
         public Ticket Ticket { get; set; }
         public Customer? Customer { get; set; }
 
-        public List<Ticket> Tickets { get; set; }
+        public PaginatedList<GuacosTracker3.Models.Ticket> Tickets { get; set; }
         //To display multiple tickets.
     }
 }

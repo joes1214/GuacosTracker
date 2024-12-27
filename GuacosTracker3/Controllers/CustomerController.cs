@@ -59,7 +59,7 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Customers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             Subtitle = "Details";
             if (id == null)
@@ -67,20 +67,22 @@ namespace GuacosTracker3.Controllers
                 return NotFound();
             }
 
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+            Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (_customers == null)
+            if (_customer == null)
             {
                 return NotFound();
             }
 
-            TicketViewModel _ticketViewModel = new TicketViewModel();
+            TicketViewModel _ticketViewModel = new();
 
-            _ticketViewModel.Customer = _customers;
+            _ticketViewModel.Customer = _customer;
 
-            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customers.Id).ToListAsync();
+            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
 
-            _ticketViewModel.Tickets = tickets;
+            int pageSize = 10;
+
+            _ticketViewModel.Tickets = PaginatedList<Ticket>.CreatePagination(tickets, pageNum ?? 1, pageSize); ;
 
             return View(_ticketViewModel);
         }

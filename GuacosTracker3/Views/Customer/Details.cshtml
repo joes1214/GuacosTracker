@@ -2,8 +2,7 @@
 
 <div class="row my-3">
 	<div class="col">
-		<h2>@Html.DisplayFor(model => model.Customer.LName), @Html.DisplayFor(model => model.Customer.FName)</h2>
-		<hr />
+		<h2>@Model.Customer.LName, @Model.Customer.FName</h2>
 	</div>
 </div>
 
@@ -11,7 +10,7 @@
 	<div class="col">
 		<dl class="row">
 			<dt class="col-sm-4">
-				@Html.DisplayNameFor(model => model.Customer.Address)
+				Address
 			</dt>
 			<dd class="col-sm-8">
 				@if (Model.Customer.Address == null || Model.Customer.Address == "")
@@ -20,11 +19,11 @@
 				}
 				else
 				{
-					@Html.DisplayFor(model => model.Customer.Address)
+					@Model.Customer.Address
 				}
 			</dd>
 			<dt class="col-sm-4">
-				@Html.DisplayNameFor(model => model.Customer.Phone)
+				Phone
 			</dt>
 			<dd class="col-sm-8">
 				@if (Model.Customer.Phone == null || Model.Customer.Phone == "")
@@ -33,11 +32,11 @@
 				}
 				else
 				{
-					@Html.DisplayFor(model => model.Customer.Phone)
+					@Model.Customer.Phone
 				}
 			</dd>
 			<dt class="col-sm-4">
-				@Html.DisplayNameFor(model => model.Customer.AltPhone)
+				Alternate Phone
 			</dt>
 			<dd class="col-sm-8">
 				@if (Model.Customer.AltPhone == null || Model.Customer.AltPhone == "")
@@ -46,11 +45,11 @@
 				}
 				else
 				{
-					@Html.DisplayFor(model => model.Customer.AltPhone)
+					@Model.Customer.AltPhone
 				}
 			</dd>
 			<dt class="col-sm-4">
-				@Html.DisplayNameFor(model => model.Customer.Email)
+				Email
 			</dt>
 			<dd class="col-sm-8">
 				@if (Model.Customer.Email == null || Model.Customer.Email == "")
@@ -59,17 +58,23 @@
 				}
 				else
 				{
-					@Html.DisplayFor(model => model.Customer.Email)
+					@Model.Customer.Email
 				}
 			</dd>
 		</dl>
 	</div>
 </div>
 
-<div class="row my-3">
+<div class="row my-3 pb-3">
 	<div class="col">
 		<a asp-action="Edit" asp-route-id="@Model?.Customer.Id">Edit</a> |
 		<a asp-action="Index">Back to List</a>
+	</div>
+</div>
+
+<div class="row my-3">
+	<div class="col">
+		<h3>Tickets</h3>
 		<hr />
 	</div>
 </div>
@@ -80,7 +85,18 @@
 			<thead>
 				<tr>
 					<th>
-						Tickets
+						Title
+					</th>
+
+					<th>
+						Status
+					</th>
+					
+					<th>
+						Last updated
+					</th>					
+					<th>
+						Created
 					</th>
 				</tr>
 			</thead>
@@ -100,9 +116,11 @@
 								<a asp-controller="Ticket" asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-reset">@Html.DisplayFor(modelItem => item.Title)</a>
 							</td>
 							<td>
-								@Html.DisplayFor(modelItem => item.RecentStatus)
+								@item.RecentStatus
 							</td>
 							<td>
+								@item.RecentChange.ToString("MM/dd/yy")
+							</td>							<td>
 								@item.Date.ToString("MM/dd/yy")
 							</td>
 						</tr>
@@ -110,5 +128,52 @@
 				}
 			</tbody>
 		</table>
+	</div>
+</div>
+
+<div class="row my-3">
+	<div class="col d-flex justify-content-around">
+		@{
+			string hasPreviousPage = !Model.Tickets.HasPreviousPage ? "disabled" : "";
+			string hasNextPage = !Model.Tickets.HasNextPage ? "disabled" : "";
+		}
+
+		<div>
+			<a asp-action="Details"
+			   asp-route-pageNum="1"
+			   class="btn btn-default @hasPreviousPage">
+				&lt; &lt;
+			</a>
+
+			<a asp-action="Details"
+			   asp-route-pageNum="@(Model.Tickets.PageIndex - 1)"
+			   class="btn btn-default @hasPreviousPage">
+				Previous
+			</a>
+		</div>
+
+		<div class="my-auto">
+			<span class="my-auto">Page</span>
+
+			<span>@Model.Tickets.PageIndex</span>
+
+			<span>of</span>
+
+			<span>@Model.Tickets.TotalPages</span>
+		</div>
+
+		<div>
+			<a asp-action="Details"
+			   asp-route-pageNum="@(Model.Tickets.PageIndex + 1)"
+			   class="btn btn-default @hasNextPage">
+				Next
+			</a>
+
+			<a asp-action="Details"
+			   asp-route-pageNum="@(Model.Tickets.TotalPages)"
+			   class="btn btn-default @hasNextPage">
+				&gt; &gt;
+			</a>
+		</div>
 	</div>
 </div>
