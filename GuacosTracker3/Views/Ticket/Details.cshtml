@@ -10,37 +10,43 @@
 </div>
 
 <div class="row my-3">
-    <div class="col-md-6">
-        <table class="table mb-3">
-            <tbody>
-                <tr class="table-activex">
-                    <th>@Html.DisplayNameFor(model => model.Ticket.Id):</th>
-                    <td>@Html.DisplayFor(model => model.Ticket.Id)</td>
-                </tr>
-                <tr class="table-activex">
-                    <th>Customer:</th>
-                    <td>
-                        @Html.DisplayFor(model => model.Customer.LName),
-                        @Html.DisplayFor(model => model.Customer.FName)
-                    </td>
-                </tr>
-                <tr class="table-activex">
-                    <th>@Html.DisplayNameFor(model => model.Ticket.Date):</th>
-                    <td>@Html.DisplayFor(model => model.Ticket.Date)</td>
-                </tr>
-                <tr class="table-activex">
-                    <th>@Html.DisplayNameFor(model => model.Ticket.EmployeeId):</th>
-                    <td colspan="3">@Html.DisplayFor(model => model.Ticket.EmployeeId)</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="col">
+        <dl class="row">
+            <dt class="col-sm-4">
+                Ticket ID
+            </dt>
+            <dd class="col-sm-8">
+                @Model.Ticket.Id
+            </dd>            
+            
+            <dt class="col-sm-4">
+                Customer
+            </dt>
+            <dd class="col-sm-8">
+                @Model.Customer.LName, @Model.Customer.FName
+            </dd>            
+            
+            <dt class="col-sm-4">
+                Date
+            </dt>
+            <dd class="col-sm-8">
+                @Model.Ticket.Date
+            </dd>            
+            
+            <dt class="col-sm-4">
+                Created by
+            </dt>
+            <dd class="col-sm-8">
+                @User.FindFirst(c => c.Type == "name")?.Value
+            </dd>
+        </dl>
 
-        <textarea class="form-control" readonly>@Html.DisplayFor(model => model.Ticket.Description)</textarea>
+        <textarea class="form-control" readonly>@Model.Ticket.Description</textarea>
 
     </div>
 </div>
 
-<div class="row my-3">
+<div class="row my-3 pb-3">
     <div class="col">
         <a asp-action="Edit" asp-route-id="@Model?.Ticket.Id">Edit</a>
     </div>
@@ -48,13 +54,8 @@
 
 <div class="row my-3">
     <div class="col">
-        <hr />
-    </div>
-</div>
-
-<div class="row my-3">
-    <div class="col">
         <h3>Notes</h3>
+        <hr />
     </div>
 </div>
 
@@ -65,9 +66,8 @@
 </div>
 
 <div class="row my-3">
-    <div class="col-md-6">
-        <form asp-action="Details" class="d-flex flex-column gap-2">
-            <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="col">
+        <form asp-action="Details" method="POST" class="d-flex flex-column gap-3">
             <div>
                 <input type="hidden" asp-for="Ticket" value="@Model.Ticket.Id" />
                 <input type="hidden" asp-for="Ticket" value="@Model.Ticket" />
@@ -75,18 +75,20 @@
                 <input type="hidden" asp-for="Note.EmployeeId" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
 
-            <div class="form-group">
-                <label asp-for="Note.Description" class="control-label"></label>*
-                <textarea asp-for="Note.Description" class="form-control"></textarea>
-                <span asp-validation-for="Note.Description" class="text-danger"></span>
-            </div>
-
             <div>
-                <label asp-for="Note.Status" class="control-label"></label>*
+                <span asp-validation-for="Note.Status" class="text-danger"></span>
+                <label asp-for="Note.Status" class="control-label"></label> <span class="text-danger">*</span>
                 <select asp-for="Note.Status" class="form-control" asp-items="ProgressList.GetStatusList()">
                 </select>
-                <span asp-validation-for="Note.Status" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <span asp-validation-for="Note.Description" class="text-danger"></span>
+                <label asp-for="Note.Description" class="control-label"></label> <span class="text-danger">*</span>
+                <textarea asp-for="Note.Description" class="form-control" rows="4"></textarea>
+                <span><span id="textarea-characters" class="text-danger">0</span>/4000</span>
+            </div>
+
             <div class="form-group mt-2 mb-4">
                 <input type="submit" value="Create Note" class="btn btn-primary" />
             </div>
@@ -95,79 +97,75 @@
 </div>
 
 <div class="row my-3">
+    <div class="col-6">
+        <h4 class="mb-3">Previous Notes</h4>
+
+        <div class="d-flex gap-3 flex-wrap overflow-auto" style="max-height: 700px">
+            @if (Model.Notes.Count > 0) {
+                @foreach (Note item in Model.Notes)
+                {
+                    <div class="card w-100">
+                        <div class="card-header bg-@ProgressList.GetColor(item.Status) text-nowrap">
+                            <h5>@item.Status</h5>
+
+                        </div>
+                        <div class="card-body">
+                            <p class="">@item.Date.ToString("MM/dd/yy")</p>
+                            <p class="card-text">@item.Description</p>
+                        </div>
+                        <div class="card-footer text-nowrap d-flex justify-content-between">
+                            <small class="text-dark">Created by: @User.FindFirst(c => c.Type == "name")?.Value</small>
+                            <small class="">@item.Id</small>
+                        </div>
+                    </div>
+                }
+            } else {
+                <span>No notes!</span>
+            }
+        </div>
+    </div>
+
+    @if(Model.RecentNote != null) {
+        <div class="col-6">
+            <h4 class="mb-3">Most recent note</h4>
+
+            <div class="card w-100">
+                <div class="card-header bg-@ProgressList.GetColor(Model.RecentNote.Status) text-nowrap">
+                    <h5>@Model.RecentNote.Status</h5>
+
+                </div>
+                <div class="card-body">
+                    <p class="">@Model.RecentNote.Date.ToString("MM/dd/yy")</p>
+                    <p class="card-text">@Model.RecentNote.Description</p>
+                </div>
+                <div class="card-footer text-nowrap d-flex justify-content-between">
+                    <small class="text-dark">Created by: @User.FindFirst(c => c.Type == "name")?.Value</small>
+                    <small class="">@Model.RecentNote.Id</small>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<div class="row">
     <div class="col">
-        <hr />
+        <a asp-action="Index">Back to List</a>
     </div>
 </div>
 
-<div class="row my-3">
-    <div class="col-md-6">
-        <table class="table table-bordered mt-2">
-            <thead>
-                @if (!Model.Notes.Any())
-                {
-                    <tr>
-                        <th>
-                            No previous notes.
-                        </th>
-                    </tr>
-                }
-                else
-                {
-                    <tr>
-                        <th colspan="2" class="bg-active">
-                            Notes:
-                        </th>
-                    </tr>
+<script>
+    const descriptionTextArea = document.getElementById('Note_Description');
+    const descriptionCharacters = document.getElementById('textarea-characters');
 
-                }
+    descriptionTextArea.addEventListener('keyup', function(){
+        const characters = descriptionTextArea.value.length;
 
-            </thead>
-            <tbody>
-                @if (Model.Notes.Any())
-                {
-                    @foreach (Note item in Model.Notes)
-                    {
-                        <tr class="table-active">
-                            <td>
-                                <b>ID:</b> @item.Id
-                            </td>
-                            <td>
-                                @item.Date.ToString("MM/dd/yy")
-                            </td>
-                        </tr>
-
-                        <tr class="@ProgressList.BgColor(item.Status)">
-                            <td colspan="2">
-                                <b>Status: </b> @Html.DisplayFor(modelItem => item.Status)
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2">
-                                <label asp-for="Note.Description" class="control-label"></label>
-                                <textarea class="form-control" readonly>@Html.DisplayFor(modelItem => item.Description)</textarea>
-                            </td>
-                        </tr>
-
-                        <tr class="small">
-                            <td colspan="2">
-                                <i class="text-secondary">
-                                    Note created by: @item.EmployeeId @User.Claims.FirstOrDefault(c => c.Type == item.EmployeeId)?.Value
-                                   @* @User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value *@
-                                    @User.FindFirst(c => c.Type == "name")?.Value
-                                    
-                                </i>
-                            </td>
-                        </tr>
-
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+        if (characters < 10 || characters >= 4000) {
+            descriptionCharacters.classList.add('text-danger');
+        } else {
+            descriptionCharacters.classList.remove('text-danger')
+        }
+        descriptionCharacters.innerText = characters;
+    });
+</script>
