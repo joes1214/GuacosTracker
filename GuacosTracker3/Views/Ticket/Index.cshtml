@@ -64,20 +64,20 @@
                     {
                         <tr class="@ProgressList.BgColor(item.Ticket.RecentStatus)">
                             <td>
-                                @Html.DisplayFor(Model => item.Ticket.RecentStatus)
+                                @item.Ticket.RecentStatus
                             </td>
                             <td>
-                                @Html.DisplayFor(Model => item.Customer.FName)
-                                @Html.DisplayFor(Model => item.Customer.LName)
+                                @item.Customer.FName
+                                @item.Customer.LName
                             </td>
                             <td>
-                                @Html.DisplayFor(Model => item.Ticket.Title)
+                                @item.Ticket.Title
                             </td>
                             <td>
-                                @Html.DisplayFor(Model => item.Ticket.RecentChange)
+                                @item.Ticket.RecentChange
                             </td>
                             <td>
-                                @Html.DisplayFor(Model => item.Ticket.Priority)
+                                <input type="checkbox" checked="@item.Ticket.Priority" class="form-check-input mx-auto" disabled />
                             </td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.Ticket.Id" class="btnx">Details</a>

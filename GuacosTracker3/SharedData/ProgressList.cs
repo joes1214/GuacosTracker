@@ -17,8 +17,8 @@ namespace GuacosTracker3.SharedData
             {"Awaiting Customer", "table-warning" },
             {"Completed", "table-success" },
             {"Unrepairable", "table-danger" }
-        };       
-        
+        };
+
         private static readonly Dictionary<string, string> StatusColors = new()
         {
             {"Awaiting Repair", "warning" },
@@ -56,6 +56,15 @@ namespace GuacosTracker3.SharedData
                 "In-Progress",
                 "Completed",
                 "Unrepairable"
+        };
+
+        public static readonly Dictionary<string, int> GetStatusOrderDict = new()
+        {
+            {"Completed", 1},
+            {"Unrepairable", 2},
+            {"Awaiting Repair", 3},
+            {"Awaiting Customer", 4},
+            {"In-Progress", 5},
         };
 
         public static string BgColor(string Status)

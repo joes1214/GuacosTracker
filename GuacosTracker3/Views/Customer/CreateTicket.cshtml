@@ -7,9 +7,6 @@
         <form asp-action="CreateTicket">
             <div asp-validation-summary="All" class="text-danger"></div>
 
-            <input type="hidden" asp-for="Tickets" value="@Model.Tickets"/>
-            <span asp-validation-for="Tickets" class="text-danger"></span>
-
             <input type="hidden" asp-for="Ticket.Customer" value="@Model.Customer.Id"/>
             <span asp-validation-for="Ticket.Customer" class="text-danger"></span>
 

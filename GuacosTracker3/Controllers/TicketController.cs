@@ -54,34 +54,31 @@ namespace GuacosTracker3.Controllers
                 return View();
             }
 
-            List<Ticket> visibleItems = _context.Ticket.Where(x => x.Hidden != true).ToList();
-
-            //Maybe combine Awaiting Repair and Customer?
-            Dictionary<string, List<Ticket>> groupedItems = visibleItems
-                .GroupBy(ticket => ticket.RecentStatus)
-                .ToLookup(group => group.Key, group => group.OrderByDescending(ticket => ticket.RecentChange).ToList()!)
-                .ToDictionary(lookup => lookup.Key, lookup => lookup.First()!);
-
-            List<Ticket> filteredItems = ProgressList.GetStatusOrder
-                .SelectMany(status => groupedItems.ContainsKey(status) ? groupedItems[status] : new List<Ticket>())
-                .ToList();
-
-            List<TicketViewModel> _ticketList = new();
-
-            TicketViewModel _ticketViewModel = new();
-            Customer _customer = new();
-
-            foreach (Ticket item in filteredItems)
-            {
-                _ticketViewModel.Ticket = item;
-                _ticketViewModel.Customer = await _context.Customers.FindAsync(item.Customer);
-                _ticketList.Add(_ticketViewModel);
-                _ticketViewModel = new TicketViewModel();
-            }
+            List<TicketViewModel> tickets = await _context.Ticket
+                .Where(t => !t.Hidden)
+                .Join(_context.Customers, ticket => ticket.Customer,
+                    customer => customer.Id,
+                    (ticket, customer) => new TicketViewModel
+                    {
+                        Ticket = ticket,
+                        Customer = customer,
+                    })
+                .ToListAsync();
 
             int pageSize = 15;
 
-            return View(PaginatedList<TicketViewModel>.CreatePagination(_ticketList, pageNum ?? 1, pageSize));
+            if (tickets == null || tickets.Count == 0)
+            {
+                return View(PaginatedList<TicketViewModel>.CreatePagination(new List<TicketViewModel>(), pageNum ?? 1, pageSize));
+            }
+
+            List<TicketViewModel> groupedTickets = tickets
+                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.RecentStatus])
+                //.ThenByDescending(t => t.Ticket.Priority)
+                .ThenBy(t => t.Ticket.RecentChange)
+                .ToList();
+
+            return View(PaginatedList<TicketViewModel>.CreatePagination(groupedTickets, pageNum ?? 1, pageSize));
         }
 
         // GET: Tickets/Details/5

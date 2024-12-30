@@ -74,17 +74,16 @@ namespace GuacosTracker3.Controllers
                 return NotFound();
             }
 
-            TicketViewModel _ticketViewModel = new();
-
-            _ticketViewModel.Customer = _customer;
-
             List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
 
             int pageSize = 10;
+            CustomerTicketDetails CustomerDetails = new()
+            {
+                Customer = _customer,
+                Tickets = PaginatedList<Ticket>.CreatePagination(tickets, pageNum ?? 1, pageSize),
+            };
 
-            _ticketViewModel.Tickets = PaginatedList<Ticket>.CreatePagination(tickets, pageNum ?? 1, pageSize); ;
-
-            return View(_ticketViewModel);
+            return View(CustomerDetails);
         }
 
         // GET: Customers/Create
