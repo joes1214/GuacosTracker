@@ -25,6 +25,16 @@ namespace GuacosTracker3.Utilities
             public static PaginatedList<T> CreatePagination(List<T> source, int pageIndex, int pageSize)
             {
                 var count = source.Count;
+                int totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+                if (pageIndex < 1)
+                {
+                    pageIndex = 1;
+                } else if (pageIndex > totalPages)
+                {
+                    pageIndex = totalPages;
+                }
+
                 var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
                 return new PaginatedList<T>(items, count, pageIndex, pageSize);
