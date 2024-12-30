@@ -1,114 +1,113 @@
 ﻿@using static GuacosTracker3.Utilities.Pagination
 @model PaginatedList<GuacosTracker3.Models.Customer>
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-<div>
-    @{
-        string hasPreviousPage = !Model.HasPreviousPage ? "disabled" : "";
-        string hasNextPage = !Model.HasNextPage ? "disabled" : "";
-    }
-    <a asp-action="Index"
-       asp-route-pageNum="1"
-       class="btn btn-default @hasPreviousPage">
-        &lt; &lt;
-    </a>
-
-    <a asp-action="Index"
-       asp-route-pageNum="@(Model.PageIndex - 1)"
-       class="btn btn-default @hasPreviousPage">
-        Previous
-    </a>
-
-    Page
-    @Model.PageIndex
-    of
-    @Model.TotalPages
-
-    <a asp-action="Index"
-       asp-route-pageNum="@(Model.PageIndex + 1)"
-       class="btn btn-default @hasNextPage">
-        Next
-    </a>
-
-    <a asp-action="Index"
-       asp-route-pageNum="@(Model.TotalPages)"
-       class="btn btn-default @hasNextPage">
-        &gt; &gt;
-    </a>
+<div class="row my-3">
+    <div class="col">
+        <a asp-action="Create">Create New</a>
+    </div>
 </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                ID
-            </th>
-            <th>
-                First
-            </th>
-            <th>
-                Last
-            </th>
-@*            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>*@
-            <th>
-                Phone #
-            </th>
-            <th>
-                Alt. Phone #
-            </th>
-            <th>
-                Email
-            </th>
-            <th colspan="2">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LName)
-                </td>
-@*                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.Phone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AltPhone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td colspan="2">
-                    <a asp-action="CreateTicket" asp-route-id="@item.Id" type="submit" value="Create">Create</a>
-                    |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                    |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger">Delete</a>
-                </td>
-@*                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id"><i class="mdi mdi-pencil-box-outline d-inline p-1"></i></a>
-                    <a asp-action="Details" asp-route-id="@item.Id"><i class="mdi mdi-information-outline d-inline p-1"></i></a>
-                    <a asp-action="Delete" asp-route-id="@item.Id"><i class="mdi mdi-trash-can-outline d-inline text-danger"></i></a>
-                </td>*@
-            </tr>
+<div class="row my-3">
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        First
+                    </th>
+                    <th>
+                        Last
+                    </th>
+                    <th>
+                        Phone #
+                    </th>
+                    <th>
+                        Alt. Phone #
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th colspan="2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Phone)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AltPhone)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td colspan="2">
+                            <a asp-action="CreateTicket" asp-route-id="@item.Id" type="submit" value="Create">Create</a>
+                            |
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            |
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row my-3">
+    <div class="col d-flex justify-content-around">
+        @{
+            string hasPreviousPage = !Model.HasPreviousPage ? "disabled" : "";
+            string hasNextPage = !Model.HasNextPage ? "disabled" : "";
         }
-    </tbody>
-</table>
+
+        <div>
+            <a asp-action="Index"
+               asp-route-pageNum="1"
+               class="btn btn-default @hasPreviousPage">
+                &lt; &lt;
+            </a>
+
+            <a asp-action="Index"
+               asp-route-pageNum="@(Model.PageIndex - 1)"
+               class="btn btn-default @hasPreviousPage">
+                Previous
+            </a>
+        </div>
+
+        <div class="my-auto">
+            <span class="my-auto">Page</span>
+
+            <span>@Model.PageIndex</span>
+
+            <span>of</span>
+
+            <span>@Model.TotalPages</span>
+        </div>
+            
+        <div>
+            <a asp-action="Index"
+               asp-route-pageNum="@(Model.PageIndex + 1)"
+               class="btn btn-default @hasNextPage">
+                Next
+            </a>
+
+            <a asp-action="Index"
+               asp-route-pageNum="@(Model.TotalPages)"
+               class="btn btn-default @hasNextPage">
+                &gt; &gt;
+            </a>
+        </div>
+    </div>
+</div>

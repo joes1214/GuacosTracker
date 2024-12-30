@@ -19,7 +19,7 @@ namespace GuacosTracker3.Controllers
     public class CustomerController : Controller
     {
         private readonly TrackerDbContext _context;
-        private string _title = "Customer";
+        private string _title = "Customers";
         private string _subtitle = "";
 
         [ViewData]
@@ -59,7 +59,7 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Customers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             Subtitle = "Details";
             if (id == null)
@@ -67,27 +67,29 @@ namespace GuacosTracker3.Controllers
                 return NotFound();
             }
 
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+            Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (_customers == null)
+            if (_customer == null)
             {
                 return NotFound();
             }
 
-            TicketViewModel _ticketViewModel = new TicketViewModel();
+            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
 
-            _ticketViewModel.Customer = _customers;
+            int pageSize = 10;
+            CustomerTicketDetails CustomerDetails = new()
+            {
+                Customer = _customer,
+                Tickets = PaginatedList<Ticket>.CreatePagination(tickets, pageNum ?? 1, pageSize),
+            };
 
-            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customers.Id).ToListAsync();
-
-            _ticketViewModel.Tickets = tickets;
-
-            return View(_ticketViewModel);
+            return View(CustomerDetails);
         }
 
         // GET: Customers/Create
         public IActionResult Create()
         {
+            Subtitle = "Create";
             return View();
         }
 
@@ -163,6 +165,7 @@ namespace GuacosTracker3.Controllers
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Subtitle = "Edit";
             if (id == null || _context.Customers == null)
             {
                 return NotFound();

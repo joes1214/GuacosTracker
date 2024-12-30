@@ -26,15 +26,13 @@
         <div class="page-wrapper">
             <header class="main-header" id="header">
                 <nav class="navbar navbar-expand-lg navbar-light px-3" id="navbar">
-                    <span class="page-title">dashboard</span>
+                    <h1 class="page-title">@ViewData["Page"]</h1>
                 </nav>
             </header>
 
-            <div class="content">
-                <main role="main" class="pb-3">
-                    @RenderBody()
-                </main>
-            </div>
+            <main role="main" class="container my-3">
+                @RenderBody()
+            </main>
 
             <footer class="footer mt-auto">
                 <div class="copyright bg-white">

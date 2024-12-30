@@ -1,97 +1,179 @@
-﻿@model TicketViewModel
-@*CUSTOMER DETAILS*@
+﻿@model CustomerTicketDetails
 
-@{
-    ViewData["Title"] = "Details";
-}
-
-<h1>Details</h1>
-
-<div>
-    <h4>Customers</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer.FName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Customer.FName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer.LName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Customer.LName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer.Address)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Customer.Address)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer.Phone)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Customer.Phone)
-        </dd>
-        @if (@Model.Customer.AltPhone != null)
-        {
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Customer.AltPhone)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Customer.AltPhone)
-            </dd>
-        }
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Customer.Email)
-        </dd>
-    </dl>
+<div class="row my-3">
+	<div class="col">
+		<h2>@Model.Customer.LName, @Model.Customer.FName</h2>
+	</div>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Customer.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="row my-3">
+	<div class="col">
+		<dl class="row">
+			<dt class="col-sm-4">
+				Address
+			</dt>
+			<dd class="col-sm-8">
+				@if (Model.Customer.Address == null || Model.Customer.Address == "")
+				{
+					<span>--</span>
+				}
+				else
+				{
+					@Model.Customer.Address
+				}
+			</dd>
+			<dt class="col-sm-4">
+				Phone
+			</dt>
+			<dd class="col-sm-8">
+				@if (Model.Customer.Phone == null || Model.Customer.Phone == "")
+				{
+					<span>--</span>
+				}
+				else
+				{
+					@Model.Customer.Phone
+				}
+			</dd>
+			<dt class="col-sm-4">
+				Alternate Phone
+			</dt>
+			<dd class="col-sm-8">
+				@if (Model.Customer.AltPhone == null || Model.Customer.AltPhone == "")
+				{
+					<span>--</span>
+				}
+				else
+				{
+					@Model.Customer.AltPhone
+				}
+			</dd>
+			<dt class="col-sm-4">
+				Email
+			</dt>
+			<dd class="col-sm-8">
+				@if (Model.Customer.Email == null || Model.Customer.Email == "")
+				{
+					<span>--</span>
+				}
+				else
+				{
+					@Model.Customer.Email
+				}
+			</dd>
+		</dl>
+	</div>
 </div>
 
-<div>
-    <table class="table table-striped table-hover table-bordered mt-2">
-        <thead>
-            <tr>
-                <th>
-                    Tickets:
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Tickets == null)
-            {
-                <tr>
-                    No tickets!
-                </tr>
-            }
-            else
-            {
-                @foreach (Ticket item in Model.Tickets)
-                {
-                    <tr>
-                        <td>
-                            <a asp-controller="Ticket" asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-reset">@Html.DisplayFor(modelItem => item.Title)</a>
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.RecentStatus)
-                        </td>
-                        <td>
-                            @item.Date.ToString("MM/dd/yy")
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
+<div class="row my-3 pb-3">
+	<div class="col">
+		<a asp-action="Edit" asp-route-id="@Model?.Customer.Id">Edit</a> |
+		<a asp-action="Index">Back to List</a>
+	</div>
+</div>
+
+<div class="row my-3">
+	<div class="col">
+		<h3>Tickets</h3>
+		<hr />
+	</div>
+</div>
+
+<div class="row my-3">
+	<div class="col">
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th>
+						Title
+					</th>
+
+					<th>
+						Status
+					</th>
+					
+					<th>
+						Last updated
+					</th>					
+					<th>
+						Created
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (Model.Tickets.Count == 0)
+				{
+					<tr>
+						<td>No tickets!</td>
+					</tr>
+				}
+				else
+				{
+					@foreach (Ticket item in Model.Tickets)
+					{
+						<tr>
+							<td>
+								<a asp-controller="Ticket" asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-reset">@Html.DisplayFor(modelItem => item.Title)</a>
+							</td>
+							<td>
+								@item.RecentStatus
+							</td>
+							<td>
+								@item.RecentChange.ToString("MM/dd/yy")
+							</td>							<td>
+								@item.Date.ToString("MM/dd/yy")
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="row my-3">
+	<div class="col d-flex justify-content-around">
+		@{
+			string hasPreviousPage = !Model.Tickets.HasPreviousPage ? "disabled" : "";
+			string hasNextPage = !Model.Tickets.HasNextPage ? "disabled" : "";
+		}
+
+		<div>
+			<a asp-action="Details"
+			   asp-route-pageNum="1"
+			   class="btn btn-default @hasPreviousPage">
+				&lt; &lt;
+			</a>
+
+			<a asp-action="Details"
+			   asp-route-pageNum="@(Model.Tickets.PageIndex - 1)"
+			   class="btn btn-default @hasPreviousPage">
+				Previous
+			</a>
+		</div>
+
+		<div class="my-auto">
+			<span class="my-auto">Page</span>
+
+			<span>@Model.Tickets.PageIndex</span>
+
+			<span>of</span>
+
+			<span>@Model.Tickets.TotalPages</span>
+		</div>
+
+		<div>
+			<a asp-action="Details"
+			   asp-route-pageNum="@(Model.Tickets.PageIndex + 1)"
+			   class="btn btn-default @hasNextPage">
+				Next
+			</a>
+
+			<a asp-action="Details"
+			   asp-route-pageNum="@(Model.Tickets.TotalPages)"
+			   class="btn btn-default @hasNextPage">
+				&gt; &gt;
+			</a>
+		</div>
+	</div>
 </div>

@@ -54,43 +54,39 @@ namespace GuacosTracker3.Controllers
                 return View();
             }
 
-            List<Ticket> visibleItems = _context.Ticket.Where(x => x.Hidden != true).ToList();
-
-            //Maybe combine Awaiting Repair and Customer?
-            Dictionary<string, List<Ticket>> groupedItems = visibleItems
-                .GroupBy(ticket => ticket.RecentStatus)
-                .ToLookup(group => group.Key, group => group.OrderByDescending(ticket => ticket.RecentChange).ToList()!)
-                .ToDictionary(lookup => lookup.Key, lookup => lookup.First()!);
-
-            List<Ticket> filteredItems = ProgressList.GetStatusOrder
-                .SelectMany(status => groupedItems.ContainsKey(status) ? groupedItems[status] : new List<Ticket>())
-                .ToList();
-
-            List<TicketViewModel> _ticketList = new();
-
-            TicketViewModel _ticketViewModel = new();
-            Customer _customer = new();
-
-            foreach (Ticket item in filteredItems)
-            {
-                _ticketViewModel.Ticket = item;
-                _ticketViewModel.Customer = await _context.Customers.FindAsync(item.Customer);
-                _ticketList.Add(_ticketViewModel);
-                _ticketViewModel = new TicketViewModel();
-            }
+            List<TicketViewModel> tickets = await _context.Ticket
+                .Where(t => !t.Hidden)
+                .Join(_context.Customers, ticket => ticket.Customer,
+                    customer => customer.Id,
+                    (ticket, customer) => new TicketViewModel
+                    {
+                        Ticket = ticket,
+                        Customer = customer,
+                    })
+                .ToListAsync();
 
             int pageSize = 15;
 
-            return View(PaginatedList<TicketViewModel>.CreatePagination(_ticketList, pageNum ?? 1, pageSize));
+            if (tickets == null || tickets.Count == 0)
+            {
+                return View(PaginatedList<TicketViewModel>.CreatePagination(new List<TicketViewModel>(), pageNum ?? 1, pageSize));
+            }
+
+            List<TicketViewModel> groupedTickets = tickets
+                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.RecentStatus])
+                //.ThenByDescending(t => t.Ticket.Priority)
+                .ThenBy(t => t.Ticket.RecentChange)
+                .ToList();
+
+            return View(PaginatedList<TicketViewModel>.CreatePagination(groupedTickets, pageNum ?? 1, pageSize));
         }
 
         // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        [HttpGet]
+        [Route("[controller]/[action]/{id:guid}")]
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null)
-            {
-                return RedirectToAction("Index");
-            }
+            Subtitle = "Details";
 
             Ticket _ticket = await _context.Ticket.SingleOrDefaultAsync(t => t.Id == id);
 
@@ -108,25 +104,22 @@ namespace GuacosTracker3.Controllers
 
             List<Note> _notes = await _context.Notes.Where(c => c.TicketId == _ticket.Id).ToListAsync();
 
-            TicketNoteCustomerViewModel _ticketNotesViewModel = new TicketNoteCustomerViewModel();
-
-            _ticketNotesViewModel.Ticket = _ticket;
-            _ticketNotesViewModel.Customer = _customers;
-            _ticketNotesViewModel.Note = new Note();
-            _ticketNotesViewModel.Notes = _notes;
+            TicketNoteCustomerViewModel _ticketNotesViewModel = new()
+            {
+                Ticket = _ticket,
+                Customer = _customers,
+                Note = new Note(),
+                Notes = _notes,
+                RecentNote = _notes.LastOrDefault() ?? null
+            };
 
             return View(_ticketNotesViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Details(Guid? id, [Bind("Ticket, Customer, Note")] TicketNoteCustomerViewModel _ticketViewModel)
+        public async Task<IActionResult> Details(Guid id, [Bind("Ticket, Customer, Note, RecentNote")] TicketNoteCustomerViewModel _ticketViewModel)
         {
-            if (id == null)
-            {
-                return RedirectToAction("Index");
-            }
-
             Ticket _ticket = await _context.Ticket.SingleOrDefaultAsync(t => t.Id == id);
             if (_ticket == null)
             {
@@ -139,7 +132,6 @@ namespace GuacosTracker3.Controllers
                 return RedirectToAction("Index");
             }
 
-
             _ticketViewModel.Ticket = _ticket;
             _ticketViewModel.Customer = _customers;
 
@@ -149,35 +141,42 @@ namespace GuacosTracker3.Controllers
 
             if (ModelState.IsValid)
             {
-                Note _note = new Note();
-                _note.TicketId = _ticket.Id;
-                _note.EmployeeId = _ticketViewModel.Note.EmployeeId;
+                Note _new_note = new()
+                {
+                    TicketId = _ticket.Id,
+                    EmployeeId = _ticketViewModel.Note.EmployeeId,
 
-                _note.Description = _ticketViewModel.Note.Description;
-                _note.Status = _ticketViewModel.Note.Status;
+                    Description = _ticketViewModel.Note.Description,
+                    Status = _ticketViewModel.Note.Status,
 
-                _note.Date = DateTime.Now;
+                    Date = DateTime.Now
+                };
 
-                _context.Add(_note);
+                _context.Add(_new_note);
                 await _context.SaveChangesAsync();
 
                 _ticket.RecentStatus = _ticketViewModel.Note.Status;
-                _ticket.RecentChange = _note.Date;
+                _ticket.RecentChange = _new_note.Date;
 
                 _context.Update(_ticket);
                 await _context.SaveChangesAsync();
+
+                List<Note> _notes = await _context.Notes.Where(c => c.TicketId == id).ToListAsync();
+                Note _recent_note = _new_note;
+
+                TicketNoteCustomerViewModel _newTicketViewModel = new()
+                {
+                    Ticket = _ticket,
+                    Customer = _customers,
+                    Note = new Note(),
+                    Notes = _notes,
+                    RecentNote = _recent_note
+                };
+
+                return View(_newTicketViewModel);
             }
 
-            List<Note> _notes = await _context.Notes.Where(c => c.TicketId == id).ToListAsync();
-
-            TicketNoteCustomerViewModel _newTicketViewModel = new TicketNoteCustomerViewModel();
-
-            _newTicketViewModel.Ticket = _ticket;
-            _newTicketViewModel.Customer = _customers;
-            _newTicketViewModel.Note = new Note();
-            _newTicketViewModel.Notes = _notes;
-
-            return View(_newTicketViewModel);
+            return RedirectToAction("Details", id);
         }
 
         // POST: Tickets/Create
