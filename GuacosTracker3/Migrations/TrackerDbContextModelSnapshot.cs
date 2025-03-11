@@ -123,7 +123,6 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RecentStatus")
-                        .IsRequired()
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("Status")
