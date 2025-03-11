@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuacosTracker3.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    [Migration("20230403014430_Update-Ticket-Emp")]
-    partial class UpdateTicketEmp
+    [Migration("20250311034317_Recreate-Migration")]
+    partial class RecreateMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,8 +78,9 @@ namespace GuacosTracker3.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(MAX)");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -113,6 +114,9 @@ namespace GuacosTracker3.Migrations
                     b.Property<string>("EmployeeId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Hidden")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("Priority")
                         .HasColumnType("bit");
