@@ -1,4 +1,4 @@
-﻿@model TicketViewModel
+﻿@model CreateTicketViewModel
 @using GuacosTracker3.SharedData
 
 <div class="row my-3">
@@ -7,18 +7,19 @@
         <form asp-action="CreateTicket">
             <div asp-validation-summary="All" class="text-danger"></div>
 
-            <input type="hidden" asp-for="Ticket.Customer" value="@Model.Customer.Id"/>
-            <span asp-validation-for="Ticket.Customer" class="text-danger"></span>
+            <input type="hidden" asp-for="CustomerID" value="@Model.CustomerID"/>
+            <input type="hidden" asp-for="CustomerFName" value="@Model.CustomerFName" />
+            <input type="hidden" asp-for="CustomerLName" value="@Model.CustomerLName" />
 
             <div class="form-group">
-                <span asp-validation-for="Ticket.Title" class="text-danger"></span>
                 <label asp-for="Ticket.Title" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Ticket.Title" class="text-danger"></span>
                 <input asp-for="Ticket.Title" class="form-control" />
                 <span><span id="title-characters" class="text-danger">0</span>/100</span>
             </div>
             <div class="form-group">
-                <span asp-validation-for="Ticket.Status" class="text-danger"></span>
                 <label asp-for="Ticket.Status" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Ticket.Status" class="text-danger"></span>
                 <select asp-for="Ticket.Status" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
                 </select> @*for drop down for status*@
             </div>
@@ -27,8 +28,8 @@
                 <input type="hidden" asp-for="Ticket.EmployeeId" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
             <div class="form-group">
-                <span asp-validation-for="Ticket.Description" class="text-danger"></span>
                 <label asp-for="Ticket.Description" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Ticket.Description" class="text-danger"></span>
                 <textarea asp-for="Ticket.Description" class="form-control" rows="4"></textarea>
                 <span><span id="textarea-characters" class="text-danger">0</span>/4000</span>
             </div>
@@ -64,25 +65,27 @@
     const titleInput = document.getElementById('Ticket_Title');
     const titleCharacters = document.getElementById('title-characters');
 
+    checkLength(descriptionCharacters, descriptionTextArea.value.length);
+    checkLength(titleCharacters, titleInput.value.length);
+
     descriptionTextArea.addEventListener('keyup', function(){
         const characters = descriptionTextArea.value.length;
 
-        if (characters < 10 || characters >= 4000) {
-            descriptionCharacters.classList.add('text-danger');
-        } else {
-            descriptionCharacters.classList.remove('text-danger')
-        }
-        descriptionCharacters.innerText = characters;
+        checkLength(descriptionCharacters, characters);
     });
 
     titleInput.addEventListener('keyup', function(){
         const characters = titleInput.value.length;
 
-        if (characters < 5 || characters >= 100) {
-            titleCharacters.classList.add('text-danger');
-        } else {
-            titleCharacters.classList.remove('text-danger')
-        }
-        titleCharacters.innerText = characters;
+        checkLength(titleCharacters, characters);
     });
+
+    function checkLength(elem, valueLength) {
+        if (valueLength < 5 || valueLength >= 100) {
+            elem.classList.add('text-danger');
+        } else {
+            elem.classList.remove('text-danger')
+        }
+        elem.innerText = valueLength;
+    }
 </script>
