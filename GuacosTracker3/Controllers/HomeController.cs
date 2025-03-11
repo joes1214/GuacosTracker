@@ -43,9 +43,5 @@ namespace GuacosTracker3.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
     }
 }
