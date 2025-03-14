@@ -62,13 +62,12 @@
                 } else {
                     @foreach (var item in Model)
                     {
-                        <tr class="@ProgressList.BgColor(item.Ticket.RecentStatus)">
+                        <tr class="@ProgressList.BgColor(item.Ticket.RecentStatus ?? item.Ticket.Status)">
                             <td>
-                                @item.Ticket.RecentStatus
+                                @(item.Ticket.RecentStatus ?? item.Ticket.Status)
                             </td>
                             <td>
-                                @item.Customer.FName
-                                @item.Customer.LName
+                                @item.CustomerName
                             </td>
                             <td>
                                 @item.Ticket.Title

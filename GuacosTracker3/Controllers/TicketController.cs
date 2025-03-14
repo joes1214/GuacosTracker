@@ -58,11 +58,7 @@ namespace GuacosTracker3.Controllers
                 .Where(t => !t.Hidden)
                 .Join(_context.Customers, ticket => ticket.Customer,
                     customer => customer.Id,
-                    (ticket, customer) => new TicketViewModel
-                    {
-                        Ticket = ticket,
-                        Customer = customer,
-                    })
+                    (ticket, customer) => new TicketViewModel(ticket, customer.FName, customer.LName))
                 .ToListAsync();
 
             int pageSize = 15;
@@ -73,7 +69,7 @@ namespace GuacosTracker3.Controllers
             }
 
             List<TicketViewModel> groupedTickets = tickets
-                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.RecentStatus])
+                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.RecentStatus ?? t.Ticket.Status])
                 //.ThenByDescending(t => t.Ticket.Priority)
                 .ThenBy(t => t.Ticket.RecentChange)
                 .ToList();

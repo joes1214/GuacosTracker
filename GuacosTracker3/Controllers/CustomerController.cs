@@ -116,50 +116,38 @@ namespace GuacosTracker3.Controllers
                 return NotFound();
             }
 
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+            Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (_customers == null)
+            if (_customer == null)
             {
-                return RedirectToAction("Index");
+                return NotFound();
             }
+            Subtitle = $"Create Ticket - {_customer.FName}, {_customer.LName}"; // fix later
 
-            TicketViewModel _ticketViewModel = new TicketViewModel();
+            CreateTicketViewModel _createTicket = new(_customer.Id, _customer.FName, _customer.LName);
 
-            _ticketViewModel.Customer = _customers;
-            //_ticketViewModel.StatusItemList = ProgressList.GetStatusList();
-
-            List<Ticket> tickets = new List<Ticket>();
-
-            return View(_ticketViewModel);
+            return View(_createTicket);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTicket([Bind("Ticket, Customer, Tickets")] TicketViewModel _ticketViewModel)
+        public async Task<IActionResult> CreateTicket(CreateTicketViewModel _ticketViewModel)
         {
-            if (ModelState.IsValid)
+            if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
             {
-                Ticket ticket = new();
-
-                ticket.Title = _ticketViewModel.Ticket.Title;
-                ticket.EmployeeId = _ticketViewModel.Ticket.EmployeeId; //Find how to grab through Auth
-                ticket.Description = _ticketViewModel.Ticket.Description;
-                ticket.Status = _ticketViewModel.Ticket.Status;
-                ticket.Priority = _ticketViewModel.Ticket.Priority;
-                ticket.Customer = _ticketViewModel.Ticket.Customer;
-                ticket.Date = DateTime.Now;
-                ticket.RecentStatus = _ticketViewModel.Ticket.Status;
-
-                _context.Ticket.Add(ticket);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(controllerName: "Ticket", actionName: "Index");
-
-            } else
-            {
-                return RedirectToAction("Index");
+                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
+                Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
+                return View(_createTicketViewModel);
             }
 
+            Ticket ticket = _ticketViewModel.Ticket;
+            ticket.Date = DateTime.Now;
+            ticket.Customer = _ticketViewModel.CustomerID;
+
+            _context.Ticket.Add(ticket);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
         }
 
         // GET: Customers/Edit/5

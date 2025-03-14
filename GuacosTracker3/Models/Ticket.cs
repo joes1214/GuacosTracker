@@ -1,4 +1,5 @@
 ﻿using GuacosTracker3.SharedData;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -51,5 +52,17 @@ namespace GuacosTracker3.Models
 
         //Hides instead of deletes
         public bool Hidden { get; set; } = false;
+
+        public Ticket() { }
+
+        public Ticket(string title, string employeeID, string description, string status, int customerID)
+        {
+            Title = title;
+            EmployeeId = employeeID;
+            Description = description;
+            Status = status;
+            RecentStatus = status;
+            Customer = customerID;
+        }
     }
 }
