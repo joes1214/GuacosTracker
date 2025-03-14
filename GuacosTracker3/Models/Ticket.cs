@@ -61,6 +61,7 @@ namespace GuacosTracker3.Models
             EmployeeId = employeeID;
             Description = description;
             Status = status;
+            RecentStatus = status;
             Customer = customerID;
         }
     }

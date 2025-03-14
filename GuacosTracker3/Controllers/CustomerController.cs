@@ -138,16 +138,16 @@ namespace GuacosTracker3.Controllers
                 CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
                 Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
                 return View(_createTicketViewModel);
-            } else
-            {
-                Ticket ticket = _ticketViewModel.Ticket;
-                ticket.Date = DateTime.Now;
-
-                _context.Ticket.Add(ticket);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
             }
+
+            Ticket ticket = _ticketViewModel.Ticket;
+            ticket.Date = DateTime.Now;
+            ticket.Customer = _ticketViewModel.CustomerID;
+
+            _context.Ticket.Add(ticket);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
         }
 
         // GET: Customers/Edit/5

@@ -10,6 +10,7 @@
             <input type="hidden" asp-for="CustomerID" value="@Model.CustomerID"/>
             <input type="hidden" asp-for="CustomerFName" value="@Model.CustomerFName" />
             <input type="hidden" asp-for="CustomerLName" value="@Model.CustomerLName" />
+            <input type="hidden" asp-for="Ticket.Customer" value="@Model.CustomerID" />
 
             <div class="form-group">
                 <label asp-for="Ticket.Title" class="control-label"></label> <span class="text-danger">*</span>
@@ -71,7 +72,7 @@
     descriptionTextArea.addEventListener('keyup', function(){
         const characters = descriptionTextArea.value.length;
 
-        checkLength(descriptionCharacters, characters);
+        checkLength(descriptionCharacters, characters, 10, 4000);
     });
 
     titleInput.addEventListener('keyup', function(){
@@ -80,8 +81,8 @@
         checkLength(titleCharacters, characters);
     });
 
-    function checkLength(elem, valueLength) {
-        if (valueLength < 5 || valueLength >= 100) {
+    function checkLength(elem, valueLength, minLength = 5, maxLength = 100) {
+        if (valueLength < minLength || valueLength >= maxLength) {
             elem.classList.add('text-danger');
         } else {
             elem.classList.remove('text-danger')
