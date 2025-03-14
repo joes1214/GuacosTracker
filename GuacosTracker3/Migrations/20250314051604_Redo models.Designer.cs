@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuacosTracker3.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    [Migration("20250311034317_Recreate-Migration")]
-    partial class RecreateMigration
+    [Migration("20250314051604_Redo models")]
+    partial class Redomodels
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,7 +78,7 @@ namespace GuacosTracker3.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(MAX)");
 
-                    b.Property<string>("EmployeeId")
+                    b.Property<string>("EmployeeID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -86,7 +86,7 @@ namespace GuacosTracker3.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TicketId")
+                    b.Property<Guid>("TicketID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -100,22 +100,21 @@ namespace GuacosTracker3.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Customer")
+                    b.Property<string>("CurrentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(MAX)");
-
-                    b.Property<string>("EmployeeId")
+                    b.Property<string>("EmployeeID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Hidden")
+                    b.Property<bool>("IsClosed")
                         .HasColumnType("bit");
 
                     b.Property<bool>("Priority")
@@ -123,13 +122,6 @@ namespace GuacosTracker3.Migrations
 
                     b.Property<DateTime>("RecentChange")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("RecentStatus")
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("Title")
                         .IsRequired()
