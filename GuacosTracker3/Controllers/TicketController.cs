@@ -55,8 +55,8 @@ namespace GuacosTracker3.Controllers
             }
 
             List<TicketViewModel> tickets = await _context.Ticket
-                .Where(t => !t.Hidden)
-                .Join(_context.Customers, ticket => ticket.Customer,
+                .Where(t => !t.IsClosed)
+                .Join(_context.Customers, ticket => ticket.CustomerID,
                     customer => customer.Id,
                     (ticket, customer) => new TicketViewModel(ticket, customer.FName, customer.LName))
                 .ToListAsync();
@@ -69,7 +69,7 @@ namespace GuacosTracker3.Controllers
             }
 
             List<TicketViewModel> groupedTickets = tickets
-                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.RecentStatus ?? t.Ticket.Status])
+                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.CurrentStatus])
                 //.ThenByDescending(t => t.Ticket.Priority)
                 .ThenBy(t => t.Ticket.RecentChange)
                 .ToList();
@@ -91,14 +91,14 @@ namespace GuacosTracker3.Controllers
                 return RedirectToAction("Index");
             }
 
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.Customer);
+            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.CustomerID);
 
             if (_customers == null)
             {
                 return RedirectToAction("Index");
             }
 
-            List<Note> _notes = await _context.Notes.Where(c => c.TicketId == _ticket.Id).ToListAsync();
+            List<Note> _notes = await _context.Notes.Where(c => c.TicketID == _ticket.Id).ToListAsync();
 
             TicketNoteCustomerViewModel _ticketNotesViewModel = new()
             {
@@ -122,7 +122,7 @@ namespace GuacosTracker3.Controllers
                 return RedirectToAction("Index");
             }
 
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.Customer);
+            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.CustomerID);
             if (_customers == null)
             {
                 return RedirectToAction("Index");
@@ -139,8 +139,8 @@ namespace GuacosTracker3.Controllers
             {
                 Note _new_note = new()
                 {
-                    TicketId = _ticket.Id,
-                    EmployeeId = _ticketViewModel.Note.EmployeeId,
+                    TicketID = _ticket.Id,
+                    EmployeeID = _ticketViewModel.Note.EmployeeID,
 
                     Description = _ticketViewModel.Note.Description,
                     Status = _ticketViewModel.Note.Status,
@@ -151,13 +151,13 @@ namespace GuacosTracker3.Controllers
                 _context.Add(_new_note);
                 await _context.SaveChangesAsync();
 
-                _ticket.RecentStatus = _ticketViewModel.Note.Status;
+                _ticket.CurrentStatus = _ticketViewModel.Note.Status;
                 _ticket.RecentChange = _new_note.Date;
 
                 _context.Update(_ticket);
                 await _context.SaveChangesAsync();
 
-                List<Note> _notes = await _context.Notes.Where(c => c.TicketId == id).ToListAsync();
+                List<Note> _notes = await _context.Notes.Where(c => c.TicketID == id).ToListAsync();
                 Note _recent_note = _new_note;
 
                 TicketNoteCustomerViewModel _newTicketViewModel = new()
@@ -225,7 +225,7 @@ namespace GuacosTracker3.Controllers
             {
                 try
                 {
-                    ticket.RecentStatus = ticket.Status;
+                    ticket.CurrentStatus = ticket.CurrentStatus;
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }

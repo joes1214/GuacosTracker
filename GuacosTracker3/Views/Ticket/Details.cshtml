@@ -30,7 +30,7 @@
                 Date
             </dt>
             <dd class="col-sm-8">
-                @Model.Ticket.Date
+                @Model.Ticket.DateCreated
             </dd>            
             
             <dt class="col-sm-4">
@@ -40,9 +40,6 @@
                 @User.FindFirst(c => c.Type == "name")?.Value
             </dd>
         </dl>
-
-        <textarea class="form-control" readonly>@Model.Ticket.Description</textarea>
-
     </div>
 </div>
 
@@ -72,7 +69,7 @@
                 <input type="hidden" asp-for="Ticket" value="@Model.Ticket.Id" />
                 <input type="hidden" asp-for="Ticket" value="@Model.Ticket" />
                 <input type="hidden" asp-for="Customer" value="@Model.Customer" />
-                <input type="hidden" asp-for="Note.EmployeeId" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
+                <input type="hidden" asp-for="Note.EmployeeID" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
 
             <div>

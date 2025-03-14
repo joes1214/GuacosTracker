@@ -6,7 +6,7 @@
         {
             return new Note
             {
-                TicketId = TicketId
+                TicketID = TicketId
             };
 
         }

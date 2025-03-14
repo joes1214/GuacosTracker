@@ -74,7 +74,7 @@ namespace GuacosTracker3.Controllers
                 return NotFound();
             }
 
-            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
+            List<Ticket> tickets = await _context.Ticket.Where(c => c.CustomerID == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
 
             int pageSize = 10;
             CustomerTicketDetails CustomerDetails = new()
@@ -124,7 +124,7 @@ namespace GuacosTracker3.Controllers
             }
             Subtitle = $"Create Ticket - {_customer.FName}, {_customer.LName}"; // fix later
 
-            CreateTicketViewModel _createTicket = new(_customer.Id, _customer.FName, _customer.LName);
+            CreateTicketViewModel _createTicket = new(_customer.Id, "", _customer.FName, _customer.LName);
 
             return View(_createTicket);
         }
@@ -135,19 +135,33 @@ namespace GuacosTracker3.Controllers
         {
             if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
             {
-                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
+                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
                 Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
                 return View(_createTicketViewModel);
             }
 
-            Ticket ticket = _ticketViewModel.Ticket;
-            ticket.Date = DateTime.Now;
-            ticket.Customer = _ticketViewModel.CustomerID;
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            _context.Ticket.Add(ticket);
-            await _context.SaveChangesAsync();
+            try
+            {
+                Ticket ticket = _ticketViewModel.Ticket;
+                ticket.CustomerID = _ticketViewModel.CustomerID;
+                _context.Ticket.Add(ticket);
+                await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
+                Note note = new(ticket.Id, ticket.EmployeeID, _ticketViewModel.Description, ticket.CurrentStatus);
+                _context.Notes.Add(note);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, "An error occurred when creating Ticket.");
+            }
         }
 
         // GET: Customers/Edit/5

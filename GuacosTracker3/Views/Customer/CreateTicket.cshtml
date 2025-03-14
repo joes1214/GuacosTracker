@@ -10,7 +10,7 @@
             <input type="hidden" asp-for="CustomerID" value="@Model.CustomerID"/>
             <input type="hidden" asp-for="CustomerFName" value="@Model.CustomerFName" />
             <input type="hidden" asp-for="CustomerLName" value="@Model.CustomerLName" />
-            <input type="hidden" asp-for="Ticket.Customer" value="@Model.CustomerID" />
+            <input type="hidden" asp-for="Ticket.CustomerID" value="@Model.CustomerID" />
 
             <div class="form-group">
                 <label asp-for="Ticket.Title" class="control-label"></label> <span class="text-danger">*</span>
@@ -19,19 +19,19 @@
                 <span><span id="title-characters" class="text-danger">0</span>/100</span>
             </div>
             <div class="form-group">
-                <label asp-for="Ticket.Status" class="control-label"></label> <span class="text-danger">*</span>
-                <span asp-validation-for="Ticket.Status" class="text-danger"></span>
-                <select asp-for="Ticket.Status" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
+                <label asp-for="Ticket.CurrentStatus" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Ticket.CurrentStatus" class="text-danger"></span>
+                <select asp-for="Ticket.CurrentStatus" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
                 </select> @*for drop down for status*@
             </div>
             <div class="form-group">
                 @*Will be pulled automatically*@
-                <input type="hidden" asp-for="Ticket.EmployeeId" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
+                <input type="hidden" asp-for="Ticket.EmployeeID" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
             <div class="form-group">
-                <label asp-for="Ticket.Description" class="control-label"></label> <span class="text-danger">*</span>
-                <span asp-validation-for="Ticket.Description" class="text-danger"></span>
-                <textarea asp-for="Ticket.Description" class="form-control" rows="4"></textarea>
+                <label asp-for="Description" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Description" class="text-danger"></span>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
                 <span><span id="textarea-characters" class="text-danger">0</span>/4000</span>
             </div>
            
@@ -60,7 +60,7 @@
 }
 
 <script>
-    const descriptionTextArea = document.getElementById('Ticket_Description');
+    const descriptionTextArea = document.getElementById('Description');
     const descriptionCharacters = document.getElementById('textarea-characters');
 
     const titleInput = document.getElementById('Ticket_Title');
