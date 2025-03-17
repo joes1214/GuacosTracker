@@ -31,7 +31,7 @@ namespace GuacosTracker3.Controllers
                     string title = string.Format("{0} - {1}", _title, _subtitle);
                     return title;
                 }
-                return _title; 
+                return _title;
             }
 
             set { _title = value; }
@@ -109,60 +109,60 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
-        public async Task<IActionResult> CreateTicket(int? id)
-        {
-            if(id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> CreateTicket(int? id)
+        //{
+        //    if(id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+        //    Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (_customer == null)
-            {
-                return NotFound();
-            }
-            Subtitle = $"Create Ticket - {_customer.FName}, {_customer.LName}"; // fix later
+        //    if (_customer == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    Subtitle = $"Create Ticket - {_customer.FName}, {_customer.LName}"; // fix later
 
-            CreateTicketViewModel _createTicket = new(_customer.Id, "", _customer.FName, _customer.LName);
+        //    CreateTicketViewModel _createTicket = new(_customer.Id, "", _customer.FName, _customer.LName);
 
-            return View(_createTicket);
-        }
+        //    return View(_createTicket);
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTicket(CreateTicketViewModel _ticketViewModel)
-        {
-            if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
-            {
-                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
-                Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
-                return View(_createTicketViewModel);
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> CreateTicket(CreateTicketViewModel _ticketViewModel)
+        //{
+        //    if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
+        //    {
+        //        CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
+        //        Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
+        //        return View(_createTicketViewModel);
+        //    }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+        //    using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try
-            {
-                Ticket ticket = _ticketViewModel.Ticket;
-                ticket.CustomerID = _ticketViewModel.CustomerID;
-                _context.Ticket.Add(ticket);
-                await _context.SaveChangesAsync();
+        //    try
+        //    {
+        //        Ticket ticket = _ticketViewModel.Ticket;
+        //        ticket.CustomerID = _ticketViewModel.CustomerID;
+        //        _context.Ticket.Add(ticket);
+        //        await _context.SaveChangesAsync();
 
-                Note note = new(ticket.Id, ticket.EmployeeID, _ticketViewModel.Description, ticket.CurrentStatus);
-                _context.Notes.Add(note);
-                await _context.SaveChangesAsync();
+        //        Note note = new(ticket.Id, ticket.EmployeeID, _ticketViewModel.Description, ticket.CurrentStatus);
+        //        _context.Notes.Add(note);
+        //        await _context.SaveChangesAsync();
 
-                await transaction.CommitAsync();
+        //        await transaction.CommitAsync();
 
-                return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                return StatusCode(500, "An error occurred when creating Ticket.");
-            }
-        }
+        //        return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await transaction.RollbackAsync();
+        //        return StatusCode(500, "An error occurred when creating Ticket.");
+        //    }
+        //}
 
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -249,14 +249,37 @@ namespace GuacosTracker3.Controllers
             {
                 _context.Customers.Remove(customers);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CustomersExists(int id)
         {
-          return (_context.Customers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Customers?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Route("api/[controller]/[action]")]
+        public JsonResult Get([FromQuery(Name= "lname")] string? lname, [FromQuery(Name = "fname")] string? fname)
+        {
+            lname ??= string.Empty;
+            fname ??= string.Empty;            
+
+            var customers = _context.Customers
+                .Where(c => c.LName.Contains(lname))
+                .Where(c => c.FName.Contains(fname))
+                .Select(c => new
+                {
+                    c.Id,
+                    c.FName,
+                    c.LName,
+                    c.Phone,
+                    c.Email,
+                })
+                .Take(10)
+                .ToList();
+
+            return Json(customers);
         }
     }
 }

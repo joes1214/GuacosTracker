@@ -15,6 +15,8 @@ namespace GuacosTracker3.Controllers
     public class TicketController : Controller
     {
         private readonly TrackerDbContext _context;
+        private readonly IConfiguration _configuration;
+
         private string _title = "Tickets";
         private string _subtitle = "";
 
@@ -40,9 +42,10 @@ namespace GuacosTracker3.Controllers
             set { _subtitle = value; }
         }
 
-        public TicketController(TrackerDbContext context)
+        public TicketController(TrackerDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: Tickets
@@ -175,21 +178,64 @@ namespace GuacosTracker3.Controllers
             return RedirectToAction("Details", id);
         }
 
-        // POST: Tickets/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,EmployeeId,Description,Status,Priority")] Ticket ticket)
+        [HttpGet]
+        public async Task<IActionResult> Create([FromQuery(Name = "customerID")] int? customerID)
         {
-            if (ModelState.IsValid)
+            Subtitle = "Create";
+
+            string apiurl = _configuration.GetValue<string>("AppSettings:apiurl");
+
+            CreateTicketViewModel _createTicket = new(apiurl);
+            if (customerID != null)
             {
-                ticket.Id = Guid.NewGuid();
-                //ticket.Status = ProgressList.StatusString(Int32.Parse(ticket.Status));
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(actionName: "Index", controllerName: "Tickets");
+                Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == customerID);
+
+                if (_customer == null)
+                {
+                    return NotFound("customerID not found");
+                }
+
+                _createTicket = new CreateTicketViewModel(_customer.Id, "", _customer.FName, _customer.LName, apiurl);
             }
 
-            return RedirectToActionPreserveMethod(actionName: "CreateTicket", controllerName: "Customers");
+            return View(_createTicket);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateTicketViewModel _ticketViewModel)
+        {
+            string apiurl = _configuration.GetValue<string>("AppSettings:apiurl");
+
+            if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
+            {
+                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID ?? 2, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName, apiurl);
+                Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
+                return View(_createTicketViewModel);
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                Ticket ticket = _ticketViewModel.Ticket;
+                ticket.CustomerID = _ticketViewModel.CustomerID ?? 1;
+                _context.Ticket.Add(ticket);
+                await _context.SaveChangesAsync();
+
+                Note note = new(ticket.Id, ticket.EmployeeID, _ticketViewModel.Description, ticket.CurrentStatus);
+                _context.Notes.Add(note);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, "An error occurred when creating Ticket.");
+            }
         }
 
         // GET: Tickets/Edit/5
