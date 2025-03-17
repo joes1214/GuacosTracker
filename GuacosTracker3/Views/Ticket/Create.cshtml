@@ -1,50 +1,59 @@
-﻿@model TicketViewModel
+﻿@model CreateTicketViewModel
 @using GuacosTracker3.SharedData
-@*@using static GuacosTracker3.Controllers.CustomersController*@
 
-@{
-    ViewData["Title"] = "Create";
-}
-@*
-<h1>Create</h1>
+<div class="row my-3">
+    <div class="col">
+        <div class="form-group text-danger">(*) Required</div>
+        <form asp-action="CreateTicket">
+            <div asp-validation-summary="All" class="text-danger"></div>
 
+            <input type="hidden" asp-for="CustomerID" value="@Model.CustomerID"/>
+            <input type="hidden" asp-for="CustomerFName" value="@Model.CustomerFName" />
+            <input type="hidden" asp-for="CustomerLName" value="@Model.CustomerLName" />
+            <input type="hidden" asp-for="Ticket.CustomerID" value="@Model.CustomerID" />
 
+            <div class="">
+                <details id="customer-details">
+                    <summary>Customer information</summary>
+                    <div class="d-flex gap-2">
+                        <input type="text" name="customer-lname" id="customer-lname-input" class="form-control" value="" placeholder="Last name" />
+                        <input type="text" name="customer-fname" id="customer-fname-input" class="form-control" value="" placeholder="First name" />
+                        <button class="btn btn-primary" id="customer-lookup-btn">Search</button>
+                    </div>
 
-<h4>Ticket</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-controller="Tickets" asp-action="Create" asp-route-id="@Model.CustomerId">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div id="customer-results" class="my-2"></div>
+                </details>
+
+            </div>
+
+            <hr>
+
             <div class="form-group">
-                <label asp-for="Tickets.CustomerId" class="control-label"></label>
-                <input asp-for="Tickets.CustomerId" class="form-control" value="@Model.CustomerId" readonly/>
-                <span asp-validation-for="Tickets.CustomerId" class="text-danger"></span>
+                <label asp-for="Ticket.Title" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Ticket.Title" class="text-danger"></span>
+                <input asp-for="Ticket.Title" class="form-control" />
+                <span><span id="title-characters" class="text-danger">0</span>/100</span>
             </div>
             <div class="form-group">
-                <label asp-for="Tickets.Title" class="control-label"></label>
-                <input asp-for="Tickets.Title" class="form-control" />
-                <span asp-validation-for="Tickets.Title" class="text-danger"></span>
+                <label asp-for="Ticket.CurrentStatus" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Ticket.CurrentStatus" class="text-danger"></span>
+                <select asp-for="Ticket.CurrentStatus" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
+                </select> @*for drop down for status*@
             </div>
             <div class="form-group">
-                <label asp-for="Tickets.EmployeeId" class="control-label"></label>
-                <input asp-for="Tickets.EmployeeId" class="form-control" />
-                <span asp-validation-for="Tickets.EmployeeId" class="text-danger"></span>
+                @*Will be pulled automatically*@
+                <input type="hidden" asp-for="Ticket.EmployeeID" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
             <div class="form-group">
-                <label asp-for="Tickets.Description" class="control-label"></label>
-                <textarea asp-for="Tickets.Description" class="form-control"></textarea>
-                <span asp-validation-for="Tickets.Description" class="text-danger"></span>
+                <label asp-for="Description" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="Description" class="text-danger"></span>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span><span id="textarea-characters" class="text-danger">0</span>/4000</span>
             </div>
-            <div class="form-group">
-                <label asp-for="Tickets.Status" class="control-label"></label>
-                <select asp-for="Tickets.Status" class="form-control" asp-items="Html.GetEnumSelectList<StatusList>()">
-                    </select> 
-                <span asp-validation-for="Tickets.Status" class="text-danger"></span>
-            </div>
+           
             <div class="form-group form-check">
-                <label class="control-label">
-                    <input class="form-check-input mt-2" asp-for="Tickets.Priority" /> @Html.DisplayNameFor(model => model.Tickets.Priority)
+                <label class="control-label mt-2">
+                    <input class="form-check-input" asp-for="Ticket.Priority" /> @Html.DisplayNameFor(model => model.Ticket.Priority)
                 </label>
             </div>
             <div class="form-group">
@@ -54,11 +63,51 @@
     </div>
 </div>
 
-<div>
-    <a asp-controller="Customers" asp-action="Index">Back to List</a>
-</div>*@
+<div class="row my-3">
+    <div class="col">
+        <a asp-controller="Customer" asp-action="Index">Back to List</a>
+    </div>
+</div>
 
 @section Scripts {
-@{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<script src="~/Ticket/static/getCustomerInfo.js"></script>
+
+<script>
+    const descriptionTextArea = document.getElementById('Description');
+    const descriptionCharacters = document.getElementById('textarea-characters');
+
+    const titleInput = document.getElementById('Ticket_Title');
+    const titleCharacters = document.getElementById('title-characters');
+
+    checkLength(descriptionCharacters, descriptionTextArea.value.length);
+    checkLength(titleCharacters, titleInput.value.length);
+
+    descriptionTextArea.addEventListener('keyup', function(){
+        const characters = descriptionTextArea.value.length;
+
+        checkLength(descriptionCharacters, characters, 10, 4000);
+    });
+
+    titleInput.addEventListener('keyup', function(){
+        const characters = titleInput.value.length;
+
+        checkLength(titleCharacters, characters);
+    });
+
+    function checkLength(elem, valueLength, minLength = 5, maxLength = 100) {
+        if (valueLength < minLength || valueLength >= maxLength) {
+            elem.classList.add('text-danger');
+        } else {
+            elem.classList.remove('text-danger')
+        }
+        elem.innerText = valueLength;
+    }
+
+    main('@Model.APIUrl', '', '');
+
+</script>
