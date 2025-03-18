@@ -4,6 +4,30 @@
 <div class="row my-3">
     <div class="col">
         <div class="form-group text-danger">(*) Required</div>
+
+        <div id="customer-search-container">
+            <details id="customer-details">
+                <summary>Customer information</summary>
+                <div class="d-flex gap-2">
+                    <input type="text" name="customer-lname" id="customer-lname-input" class="form-control" value="" placeholder="Last name" />
+                    <input type="text" name="customer-fname" id="customer-fname-input" class="form-control" value="" placeholder="First name" />
+                    <button class="btn btn-primary" id="customer-lookup-btn" type="button">Search</button>
+                </div>
+
+                <div id="customer-results" class="my-2"></div>
+            </details>
+        </div>
+
+        <hr>
+
+        <div class="my-2">
+            @if(Model.CustomerID != null){
+                <h3>Customer selected: @Model.CustomerLName, @Model.CustomerFName</h3>
+            } else {
+                <h3>No customer selected</h3>
+            }
+        </div>
+
         <form asp-action="CreateTicket">
             <div asp-validation-summary="All" class="text-danger"></div>
 
@@ -11,22 +35,6 @@
             <input type="hidden" asp-for="CustomerFName" value="@Model.CustomerFName" />
             <input type="hidden" asp-for="CustomerLName" value="@Model.CustomerLName" />
             <input type="hidden" asp-for="Ticket.CustomerID" value="@Model.CustomerID" />
-
-            <div class="">
-                <details id="customer-details">
-                    <summary>Customer information</summary>
-                    <div class="d-flex gap-2">
-                        <input type="text" name="customer-lname" id="customer-lname-input" class="form-control" value="" placeholder="Last name" />
-                        <input type="text" name="customer-fname" id="customer-fname-input" class="form-control" value="" placeholder="First name" />
-                        <button class="btn btn-primary" id="customer-lookup-btn">Search</button>
-                    </div>
-
-                    <div id="customer-results" class="my-2"></div>
-                </details>
-
-            </div>
-
-            <hr>
 
             <div class="form-group">
                 <label asp-for="Ticket.Title" class="control-label"></label> <span class="text-danger">*</span>
@@ -75,6 +83,7 @@
     }
 }
 
+<script src="~/Ticket/static/CustomerTable.js"></script>
 <script src="~/Ticket/static/getCustomerInfo.js"></script>
 
 <script>

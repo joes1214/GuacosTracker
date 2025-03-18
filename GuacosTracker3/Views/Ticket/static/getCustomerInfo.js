@@ -1,11 +1,19 @@
-﻿async function main(url, lname = '', fname = '') {
-    const requestURL = createURL(url, lname, fname);
-    const data = await getCustomers(requestURL).then();
-    const table = new CustomerTable();
+﻿const Globals = {}
+
+function main(url, lname = '', fname = '') {
+    Globals.url = url;
+    Globals.table = new CustomerTable();
+    Globals.isSearchOnCooldown = false;
+    Globals.firstNameSearchInput = document.getElementById('customer-lname-input');
+    Globals.lastNameSearchInput = document.getElementById('customer-fname-input');
+
+    const requestURL = createURL(Globals.url, lname, fname);
+    getCustomers(requestURL);
     disableAndCloseDetails(isCustomerSelected());
+    setSearchEvents();
 
     const resultsDiv = document.getElementById('customer-results');
-    table.appendTo(resultsDiv, data);
+    Globals.table.appendTo(resultsDiv);
 }
 
 function createURL(url, lname, fname) {
@@ -13,12 +21,16 @@ function createURL(url, lname, fname) {
 }
 
 function getCustomers(url) {
-    return fetch(url)
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
+        })
+        .then(data => {
+            console.log(data)
+            Globals.table.refresh(data);
         })
         .catch(error => {
             throw new Error(error)
@@ -40,68 +52,36 @@ function disableAndCloseDetails(isCustomerSelected) {
     details.open = !isCustomerSelected; 
 }
 
-class CustomerTable {
-    constructor() {
-        this.element = document.createElement('table');
-        this.element.className = 'table table-striped';
-    }
+function setSearchEvents() {
+    const customerSearchContainer = document.getElementById('customer-search-container');
+    customerSearchContainer.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
 
-    appendTo(element, data) {
-        this.createHead(data);
-        this.createBody(data);
-        element.append(this.element);
-    }
-
-    createHead(data) {
-        const header = document.createElement('thead');
-        const row = document.createElement('tr');
-
-        if (data.length < 1) {
-            return
+            searchCustomersEvent();
         }
-        else {
-            Object.keys(data[0]).forEach((key) => {
-                const th = document.createElement('th');
-                th.innerText = key;
-                row.append(th);
-            });
-        }
+    });
 
-        const th = document.createElement('th');
-        row.append(th);
+    const searchBtn = document.getElementById('customer-lookup-btn');
+    searchBtn.addEventListener('click', () => {
+        searchCustomersEvent();
+    });
+}
 
-        header.append(row);
-        this.element.append(header);
-    }
+function searchCustomersEvent() {
+    if (!Globals.isSearchOnCooldown) {
+        Globals.isSearchOnCooldown = true;
 
-    createBody(data) {
-        const body = document.createElement('tbody');
+        const firstName = Globals.firstNameSearchInput.value.trim();
+        const lastName = Globals.lastNameSearchInput.value.trim();
 
-        data.forEach((obj) => {
-            const row = document.createElement('tr');
+        const url = createURL(Globals.url, firstName, lastName);
+        getCustomers(url);
 
-            Object.keys(obj).forEach((key) => {
-                const td = document.createElement('td');
-                td.innerText = obj[key];
-                row.append(td);
-            });
-
-            const td = document.createElement('td');
-            td.append(this.createAnchor(obj.id));
-            row.append(td);
-
-            body.append(row);
-        });
-
-        this.element.append(body);
-    }
-
-    createAnchor(id) {
-        const anchor = document.createElement('a');
-        anchor.innerText = 'Select';
-        anchor.className = 'btn btn-secondary btn-sm';
-        anchor.href = `?customerID=${id}`
-
-        return anchor;
+        setTimeout(() => {
+            Globals.isSearchOnCooldown = false;
+        }, 1000);
+    } else {
+        console.log('Search is rate-limited. Please wait...');
     }
 }
