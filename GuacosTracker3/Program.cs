@@ -4,8 +4,15 @@ using GuacosTracker3.Data;
 using GuacosTracker3.Areas.Identity.Data;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load configuration from appsettings.json
+var configuration = builder.Configuration;
+
+// Register IConfiguration in the DI container
+builder.Services.AddSingleton(configuration);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -35,6 +42,26 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 });
 
 var app = builder.Build();
+
+// Dynamically creates static paths
+var viewPaths = Path.Combine(builder.Environment.ContentRootPath, "Views");
+if (Directory.Exists(viewPaths))
+{
+    var viewFolders = Directory.GetDirectories(viewPaths);
+    foreach(var viewFolder in viewFolders)
+    {
+        var staticFolder = Path.Combine(viewFolder, "static");
+        if (Directory.Exists(staticFolder))
+        {
+            var viewName = new DirectoryInfo(viewFolder).Name;
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(staticFolder),
+                RequestPath = $"/{viewName}/Static"
+            });
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

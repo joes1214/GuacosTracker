@@ -25,6 +25,7 @@ namespace GuacosTracker3.Models
 
         [Required]
         [Column(TypeName = "nvarchar(25)")]
+        [Display(Name = "Status")]
         public string CurrentStatus { get; set; }
         //In-Progress | Awaiting Repair | Completed | Awaiting Customer
 
