@@ -109,61 +109,6 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
-        //public async Task<IActionResult> CreateTicket(int? id)
-        //{
-        //    if(id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
-
-        //    if (_customer == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    Subtitle = $"Create Ticket - {_customer.FName}, {_customer.LName}"; // fix later
-
-        //    CreateTicketViewModel _createTicket = new(_customer.Id, "", _customer.FName, _customer.LName);
-
-        //    return View(_createTicket);
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> CreateTicket(CreateTicketViewModel _ticketViewModel)
-        //{
-        //    if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
-        //    {
-        //        CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
-        //        Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
-        //        return View(_createTicketViewModel);
-        //    }
-
-        //    using var transaction = await _context.Database.BeginTransactionAsync();
-
-        //    try
-        //    {
-        //        Ticket ticket = _ticketViewModel.Ticket;
-        //        ticket.CustomerID = _ticketViewModel.CustomerID;
-        //        _context.Ticket.Add(ticket);
-        //        await _context.SaveChangesAsync();
-
-        //        Note note = new(ticket.Id, ticket.EmployeeID, _ticketViewModel.Description, ticket.CurrentStatus);
-        //        _context.Notes.Add(note);
-        //        await _context.SaveChangesAsync();
-
-        //        await transaction.CommitAsync();
-
-        //        return RedirectToAction("Details", "Ticket", new { id = ticket.Id });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await transaction.RollbackAsync();
-        //        return StatusCode(500, "An error occurred when creating Ticket.");
-        //    }
-        //}
-
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
