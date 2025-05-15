@@ -259,7 +259,7 @@ namespace GuacosTracker3.Controllers
             return (_context.Customers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        [Route("api/[controller]/[action]")]
+        [HttpGet("[controller]/Customer", Name="Get_Customer")]
         public JsonResult Get([FromQuery(Name= "lname")] string? lname, [FromQuery(Name = "fname")] string? fname)
         {
             lname ??= string.Empty;

@@ -151,18 +151,7 @@
     </div>
 </div>
 
+<script src="~/js/trackText.js"></script>
 <script>
-    const descriptionTextArea = document.getElementById('Note_Description');
-    const descriptionCharacters = document.getElementById('textarea-characters');
-
-    descriptionTextArea.addEventListener('keyup', function(){
-        const characters = descriptionTextArea.value.length;
-
-        if (characters < 10 || characters >= 4000) {
-            descriptionCharacters.classList.add('text-danger');
-        } else {
-            descriptionCharacters.classList.remove('text-danger')
-        }
-        descriptionCharacters.innerText = characters;
-    });
+    trackText('Note_Description', 'textarea-characters', 10, 4000);
 </script>

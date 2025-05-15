@@ -183,9 +183,7 @@ namespace GuacosTracker3.Controllers
         {
             Subtitle = "Create";
 
-            string apiurl = _configuration.GetValue<string>("AppSettings:apiurl");
-
-            CreateTicketViewModel _createTicket = new(apiurl);
+            CreateTicketViewModel _createTicket = new();
             if (customerID != null)
             {
                 Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == customerID);
@@ -195,7 +193,7 @@ namespace GuacosTracker3.Controllers
                     return NotFound("customerID not found");
                 }
 
-                _createTicket = new CreateTicketViewModel(_customer.Id, "", _customer.FName, _customer.LName, apiurl);
+                _createTicket = new CreateTicketViewModel(_customer.Id, "", _customer.FName, _customer.LName);
             }
 
             return View(_createTicket);
@@ -209,7 +207,7 @@ namespace GuacosTracker3.Controllers
 
             if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
             {
-                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID ?? 2, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName, apiurl);
+                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID ?? 2, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
                 Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
                 return View(_createTicketViewModel);
             }

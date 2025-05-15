@@ -22,7 +22,12 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Views\Shared\static\" />
     <Folder Include="wwwroot\svg\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\trackText.js" />
   </ItemGroup>
 
   <ItemGroup>

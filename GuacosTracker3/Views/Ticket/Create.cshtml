@@ -28,7 +28,7 @@
             }
         </div>
 
-        <form asp-action="CreateTicket">
+        <form asp-action="Create">
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <input type="hidden" asp-for="CustomerID" value="@Model.CustomerID"/>
@@ -46,10 +46,9 @@
                 <label asp-for="Ticket.CurrentStatus" class="control-label"></label> <span class="text-danger">*</span>
                 <span asp-validation-for="Ticket.CurrentStatus" class="text-danger"></span>
                 <select asp-for="Ticket.CurrentStatus" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
-                </select> @*for drop down for status*@
+                </select>
             </div>
             <div class="form-group">
-                @*Will be pulled automatically*@
                 <input type="hidden" asp-for="Ticket.EmployeeID" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
             </div>
             <div class="form-group">
@@ -77,46 +76,13 @@
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
-
+<script src="~/js/trackText.js"></script>
 <script src="~/Ticket/static/CustomerTable.js"></script>
 <script src="~/Ticket/static/getCustomerInfo.js"></script>
 
 <script>
-    const descriptionTextArea = document.getElementById('Description');
-    const descriptionCharacters = document.getElementById('textarea-characters');
+    trackText('Description', 'textarea-characters', 10, 4000);
+    trackText('Ticket_Title', 'title-characters', 10, 100);
 
-    const titleInput = document.getElementById('Ticket_Title');
-    const titleCharacters = document.getElementById('title-characters');
-
-    checkLength(descriptionCharacters, descriptionTextArea.value.length);
-    checkLength(titleCharacters, titleInput.value.length);
-
-    descriptionTextArea.addEventListener('keyup', function(){
-        const characters = descriptionTextArea.value.length;
-
-        checkLength(descriptionCharacters, characters, 10, 4000);
-    });
-
-    titleInput.addEventListener('keyup', function(){
-        const characters = titleInput.value.length;
-
-        checkLength(titleCharacters, characters);
-    });
-
-    function checkLength(elem, valueLength, minLength = 5, maxLength = 100) {
-        if (valueLength < minLength || valueLength >= maxLength) {
-            elem.classList.add('text-danger');
-        } else {
-            elem.classList.remove('text-danger')
-        }
-        elem.innerText = valueLength;
-    }
-
-    main('@Model.APIUrl', '', '');
-
+    main('@Url.RouteUrl("Get_Customer")', '', '');
 </script>

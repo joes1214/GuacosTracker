@@ -17,7 +17,7 @@ function main(url, lname = '', fname = '') {
 }
 
 function createURL(url, lname, fname) {
-    return `${url}/api/customer/get?lname=${lname}&${fname}`;
+    return `${url}?lname=${lname}&fname=${fname}`;
 }
 
 function getCustomers(url) {
@@ -29,7 +29,6 @@ function getCustomers(url) {
             return response.json();
         })
         .then(data => {
-            console.log(data)
             Globals.table.refresh(data);
         })
         .catch(error => {
