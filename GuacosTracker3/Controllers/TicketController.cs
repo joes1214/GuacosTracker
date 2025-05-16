@@ -238,55 +238,44 @@ namespace GuacosTracker3.Controllers
 
         // GET: Tickets/Edit/5
         [Authorize(Roles = "Manager, Admin")]
-        public async Task<IActionResult> Edit(Guid? id)
+        public IActionResult Edit(Guid id)
         {
-            if (id == null || _context.Ticket == null)
-            {
-                return NotFound();
-            }
+            Subtitle = "Edit";
 
-            var ticket = await _context.Ticket.FindAsync(id);
-            if (ticket == null)
+            var ticket = _context.Ticket.Find(id);
+            if (ticket == null) return NotFound();
+
+            var customer = _context.Customers.Find(ticket.CustomerID);
+            if (customer == null) return NotFound();
+
+            EditTicketViewModel editTicket = new EditTicketViewModel
             {
-                return NotFound();
-            }
-            return View(ticket);
+                Id = ticket.Id,
+                Title = ticket.Title,
+                CustomerID = ticket.CustomerID,
+                IsPriority = ticket.Priority,
+                IsClosed = ticket.IsClosed,
+                DateCreated = ticket.DateCreated,
+                Customer = customer.GetFullName(),
+            };
+            return View(editTicket);
         }
 
-        // POST: Tickets/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,EmployeeId,Date,Description,Status,Priority,Customer,Hidden")] Ticket ticket)
+        public IActionResult Edit(EditTicketViewModel editTicket)
         {
-            if (id != ticket.Id)
-            {
-                return NotFound();
-            }
+            if (!ModelState.IsValid) return View(editTicket);
+            
+            var ticket = _context.Ticket.Find(editTicket.Id);
+            if (ticket == null) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    ticket.CurrentStatus = ticket.CurrentStatus;
-                    _context.Update(ticket);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TicketExists(ticket.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(ticket);
+            ticket.Title = editTicket.Title;
+            ticket.Priority = editTicket.IsPriority;
+            ticket.IsClosed = editTicket.IsClosed;
+
+            _context.SaveChanges();
+            return RedirectToAction("Edit", ticket.Id);
         }
 
         // POST: Tickets/Delete/5
