@@ -1,16 +1,9 @@
 ﻿@using GuacosTracker3.SharedData
-@model GuacosTracker3.Models.Ticket
+@model GuacosTracker3.Models.ViewModels.EditTicketViewModel
 
-@{
-    ViewData["Title"] = "Edit";
-}
+<div class="row my-3">
+    <div class="col">
 
-<h1>Edit</h1>
-
-<h4>Ticket</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -20,50 +13,49 @@
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
+                <span><span id="title-characters" class="text-danger">0</span>/100</span>
             </div>
             <div class="form-group">
-                <label asp-for="EmployeeID" class="control-label"></label>
-                <input asp-for="EmployeeID" class="form-control" />
-                <span asp-validation-for="EmployeeID" class="text-danger"></span>
+                <label asp-for="Customer" class="control-label"></label>
+                <input asp-for="Customer" class="form-control" disabled/>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmployeeName" class="control-label"></label>
+                <input asp-for="EmployeeName" class="form-control" disabled />
             </div>
             <div class="form-group">
                 <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
+                <input asp-for="DateCreated" class="form-control" disabled />
             </div>
-            <div class="form-group">
-                <label asp-for="CurrentStatus" class="control-label"></label>
-                <select asp-for="CurrentStatus" class="form-control" asp-items="ProgressList.GetStatusList()"></select>
-                <span asp-validation-for="CurrentStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    @if (Model.Priority)
-                    {
-                        <span>Priority</span>
-                    } else {
-                        <span>Not Priority</span>
-                    }
-                </label>
-            </div>
+            <div class="d-flex gap-4">
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input asp-for="IsPriority" class="form-check-input"/><span>Priority?</span>
+                    </label>
+                </div>
 
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input asp-for="IsClosed" class="form-check-input" /> <span>Closed?</span>
-                </label>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input asp-for="IsClosed" class="form-check-input"/><span>Closed?</span>
+                    </label>
+                </div>
             </div>
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+            <button type="submit" value="Save" class="btn btn-primary">Save</button>
         </form>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="row my-3">
+    <div class="col">
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<script src="~/js/trackText.js"></script>
+<script src="~/Ticket/static/CustomerTable.js"></script>
+<script src="~/Ticket/static/getCustomerInfo.js"></script>
+
+<script>
+    trackText('Title', 'title-characters', 10, 4000);
+</script>
