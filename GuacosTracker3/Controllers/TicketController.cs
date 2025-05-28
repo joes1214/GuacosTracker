@@ -273,9 +273,20 @@ namespace GuacosTracker3.Controllers
             ticket.Title = editTicket.Title;
             ticket.Priority = editTicket.IsPriority;
             ticket.IsClosed = editTicket.IsClosed;
+            ticket.RecentChange = DateTime.Now;
 
+            Note note = new()
+            {
+                TicketID = ticket.Id,
+                EmployeeID = ticket.EmployeeID,//update to use current users ID
+                Description = "Title of ticket was edited.",
+                Status = ticket.CurrentStatus,
+                Date = ticket.RecentChange
+            };
+
+            _context.Add(note);
             _context.SaveChanges();
-            return RedirectToAction("Edit", ticket.Id);
+            return RedirectToAction("Details", new {id = ticket.Id });
         }
 
         // POST: Tickets/Delete/5
