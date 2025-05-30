@@ -74,7 +74,7 @@ namespace GuacosTracker3.Controllers
                 return NotFound();
             }
 
-            List<Ticket> tickets = await _context.Ticket.Where(c => c.CustomerID == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
+            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer.Id == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
 
             int pageSize = 10;
             CustomerTicketDetails CustomerDetails = new()

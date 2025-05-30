@@ -1,4 +1,4 @@
-﻿@model CreateTicketViewModel
+﻿@model TicketCreateViewModel
 @using GuacosTracker3.SharedData
 
 <div class="row my-3">
@@ -22,7 +22,7 @@
 
         <div class="my-2">
             @if(Model.CustomerID != null){
-                <h3>Customer selected: @Model.CustomerLName, @Model.CustomerFName</h3>
+                <h3>Customer selected: @Model.CustomerName</h3>
             } else {
                 <h3>No customer selected</h3>
             }
@@ -31,36 +31,33 @@
         <form asp-action="Create">
             <div asp-validation-summary="All" class="text-danger"></div>
 
-            <input type="hidden" asp-for="CustomerID" value="@Model.CustomerID"/>
-            <input type="hidden" asp-for="CustomerFName" value="@Model.CustomerFName" />
-            <input type="hidden" asp-for="CustomerLName" value="@Model.CustomerLName" />
-            <input type="hidden" asp-for="Ticket.CustomerID" value="@Model.CustomerID" />
+            <input type="hidden" asp-for="@Model.CustomerID"/>
 
             <div class="form-group">
-                <label asp-for="Ticket.Title" class="control-label"></label> <span class="text-danger">*</span>
-                <span asp-validation-for="Ticket.Title" class="text-danger"></span>
-                <input asp-for="Ticket.Title" class="form-control" />
+                <label asp-for="@Model.Title" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                <input asp-for="@Model.Title" class="form-control" />
                 <span><span id="title-characters" class="text-danger">0</span>/100</span>
             </div>
             <div class="form-group">
-                <label asp-for="Ticket.CurrentStatus" class="control-label"></label> <span class="text-danger">*</span>
-                <span asp-validation-for="Ticket.CurrentStatus" class="text-danger"></span>
-                <select asp-for="Ticket.CurrentStatus" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
+                <label asp-for="@Model.Status" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="@Model.Status" class="text-danger"></span>
+                <select asp-for="@Model.Status" class="form-control" asp-items="ProgressList.GetStatusListOpen()">
                 </select>
             </div>
             <div class="form-group">
-                <input type="hidden" asp-for="Ticket.EmployeeID" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
+                @{/*<input type="hidden" asp-for="Ticket.EmployeeID" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />*/}
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label> <span class="text-danger">*</span>
-                <span asp-validation-for="Description" class="text-danger"></span>
-                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <label asp-for="@Model.Description" class="control-label"></label> <span class="text-danger">*</span>
+                <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                <textarea asp-for="@Model.Description" class="form-control" rows="4"></textarea>
                 <span><span id="textarea-characters" class="text-danger">0</span>/4000</span>
             </div>
            
             <div class="form-group form-check">
                 <label class="control-label mt-2">
-                    <input class="form-check-input" asp-for="Ticket.Priority" /> @Html.DisplayNameFor(model => model.Ticket.Priority)
+                    @{/*<input class="form-check-input" asp-for="Ticket.Priority" /> @Html.DisplayNameFor(model => model.Ticket.Priority)*/}
                 </label>
             </div>
             <div class="form-group">
@@ -82,7 +79,7 @@
 
 <script>
     trackText('Description', 'textarea-characters', 10, 4000);
-    trackText('Ticket_Title', 'title-characters', 10, 100);
+    trackText('Title', 'title-characters', 10, 100);
 
     main('@Url.RouteUrl("Get_Customer")', '', '');
 </script>

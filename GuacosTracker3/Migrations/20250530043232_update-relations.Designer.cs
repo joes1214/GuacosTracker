@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuacosTracker3.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    [Migration("20250314051604_Redo models")]
-    partial class Redomodels
+    [Migration("20250530043232_update-relations")]
+    partial class updaterelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -104,7 +104,7 @@ namespace GuacosTracker3.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<int>("CustomerID")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreated")
@@ -129,6 +129,8 @@ namespace GuacosTracker3.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Ticket");
                 });
@@ -358,6 +360,17 @@ namespace GuacosTracker3.Migrations
                     b.HasDiscriminator().HasValue("TrackerUser");
                 });
 
+            modelBuilder.Entity("GuacosTracker3.Models.Ticket", b =>
+                {
+                    b.HasOne("GuacosTracker3.Models.Customer", "Customer")
+                        .WithMany("Tickets")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -407,6 +420,11 @@ namespace GuacosTracker3.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GuacosTracker3.Models.Customer", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

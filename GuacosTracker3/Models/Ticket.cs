@@ -42,16 +42,15 @@ namespace GuacosTracker3.Models
 
         //Relations
         public Customer Customer { get; set; }
-        public int CustomerID { get; set; }
+        //public int CustomerID { get; set; }
 
         public Ticket() { }
 
-        public Ticket(string title, string employeeID, string status, int customerID, Customer customer)
+        public Ticket(string title, string employeeID, string status, Customer customer)
         {
             Title = title;
             EmployeeID = employeeID;
             CurrentStatus = status;
-            CustomerID = customerID;
             Customer = customer;
         }
     }

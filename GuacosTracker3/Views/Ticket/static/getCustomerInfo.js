@@ -38,12 +38,13 @@ function getCustomers(url) {
 
 function isCustomerSelected() {
     const customerID = document.getElementById('CustomerID').value;
-    const customerFName = document.getElementById('CustomerFName').value;
-    const customerLName = document.getElementById('CustomerLName').value;
+    console.log(customerID)
+    //const customerFName = document.getElementById('CustomerFName').value;
+    //const customerLName = document.getElementById('CustomerLName').value;
 
-    return customerID !== ""
-        && customerFName !== ""
-        && customerLName !== "";
+    return customerID !== "";
+        //&& customerFName !== ""
+        //&& customerLName !== "";
 }
 
 function disableAndCloseDetails(isCustomerSelected) {
