@@ -26,9 +26,9 @@ namespace GuacosTracker3.Models.ViewModels
             CustomerLName = customerLName;
         }
 
-        public CreateTicketViewModel(string title, string employeeID, string description, string status, int customerID, string customerFName, string customerLName)
+        public CreateTicketViewModel(string title, string employeeID, string description, string status, int customerID, string customerFName, string customerLName, Customer customer)
         {
-            Ticket = new Ticket(title, employeeID, status, customerID);
+            Ticket = new Ticket(title, employeeID, status, customerID, customer);
             Description = description;
             CustomerID = customerID;
             CustomerFName = customerFName;

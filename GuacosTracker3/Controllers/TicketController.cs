@@ -48,7 +48,6 @@ namespace GuacosTracker3.Controllers
             _configuration = configuration;
         }
 
-        // GET: Tickets
         public async Task<IActionResult> Index(int? pageNum)
         {
             if (_context.Ticket == null)
@@ -57,27 +56,33 @@ namespace GuacosTracker3.Controllers
                 return View();
             }
 
-            List<TicketViewModel> tickets = await _context.Ticket
-                .Where(t => !t.IsClosed)
-                .Join(_context.Customers, ticket => ticket.CustomerID,
-                    customer => customer.Id,
-                    (ticket, customer) => new TicketViewModel(ticket, customer.FName, customer.LName))
+            var tickets = await _context.Ticket
+                .Include(t => t.Customer)
+                .OrderByDescending(t => t.RecentChange)
+                .Select(t => new TicketIndexViewModel
+                {
+                    Id = t.Id,
+                    Status = t.CurrentStatus,
+                    CustomerName = t.Customer == null ? t.Customer.GetFullName() : "N/A",
+                    Title = t.Title,
+                    RecentChange = t.RecentChange,
+                })
                 .ToListAsync();
 
             int pageSize = 15;
 
             if (tickets == null || tickets.Count == 0)
             {
-                return View(PaginatedList<TicketViewModel>.CreatePagination(new List<TicketViewModel>(), pageNum ?? 1, pageSize));
+                return View(PaginatedList<TicketIndexViewModel>.CreatePagination(new List<TicketIndexViewModel>(), pageNum ?? 1, pageSize));
             }
 
-            List<TicketViewModel> groupedTickets = tickets
-                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.CurrentStatus])
+            var groupedTickets = tickets
+                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Status])
                 //.ThenByDescending(t => t.Ticket.Priority)
-                .ThenBy(t => t.Ticket.RecentChange)
+                .ThenBy(t => t.RecentChange)
                 .ToList();
 
-            return View(PaginatedList<TicketViewModel>.CreatePagination(groupedTickets, pageNum ?? 1, pageSize));
+            return View(PaginatedList<TicketIndexViewModel>.CreatePagination(groupedTickets, pageNum ?? 1, pageSize));
         }
 
         // GET: Tickets/Details/5
