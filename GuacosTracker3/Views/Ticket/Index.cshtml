@@ -64,7 +64,7 @@
                     {
                         <tr class="@ProgressList.BgColor(item.Status)">
                             <td>
-                                @(item.Status)
+                                @item.Status
                             </td>
                             <td>
                                 @item.CustomerName
@@ -76,25 +76,20 @@
                                 @item.RecentChange
                             </td>
                             <td>
-                                <input type="checkbox" checked="false" class="form-check-input mx-auto" disabled />
+                                <input type="checkbox" class="form-check-input mx-auto" disabled />
                             </td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btnx">Details</a>
-                                <span>|</span>
+                                
                                 @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
                                 @if (User.IsInRole("Admin"))
                                 {
+                                    <span>|</span>
                                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                                     <span>|</span>
                                     <form asp-route-id="@item.Id" asp-action="Delete" class="d-inline p-1">
                                         <button class="text-danger">Delete</button>
                                     </form>
-                                }
-                                else
-                                {
-                                    <a class="btn" title="Higher Permissions Required">Edit</a>
-
-                                    <a class="btn" title="Higher Permissions Required">Delete</a>
                                 }
                             </td>
                         </tr>
