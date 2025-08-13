@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GuacosTracker3.Migrations
 {
-    public partial class updaterelations : Migration
+    /// <inheritdoc />
+    public partial class updateusers : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -28,9 +30,10 @@ namespace GuacosTracker3.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Auth0Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -59,7 +62,7 @@ namespace GuacosTracker3.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(150)", maxLength: 100, nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     AltPhone = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
@@ -249,6 +252,12 @@ namespace GuacosTracker3.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Auth0Id",
+                table: "AspNetUsers",
+                column: "Auth0Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -261,6 +270,7 @@ namespace GuacosTracker3.Migrations
                 column: "CustomerId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

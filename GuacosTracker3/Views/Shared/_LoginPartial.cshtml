@@ -1,8 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using GuacosTracker3.Areas.Identity.Data
 
-@inject SignInManager<TrackerUser> SignInManager
-@inject UserManager<TrackerUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <ul class="d-flex">
     @if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value != null)

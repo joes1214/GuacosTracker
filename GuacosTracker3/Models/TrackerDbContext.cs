@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GuacosTracker3.Data
 {
-    public class TrackerDbContext: IdentityDbContext
+    public class TrackerDbContext: IdentityDbContext<ApplicationUser>
     {
         public TrackerDbContext(DbContextOptions<TrackerDbContext> options) : base(options)
         {
@@ -22,18 +22,21 @@ namespace GuacosTracker3.Data
         {
             base.OnModelCreating(builder);
 
-            builder.ApplyConfiguration(new ApplicationUserConfiguration());
+            builder.Entity<ApplicationUser>()
+                .HasIndex(u => u.Auth0Id)
+                .IsUnique();
+            //builder.ApplyConfiguration(new ApplicationUserConfiguration());
         }
 
     }
 
-    public class ApplicationUserConfiguration : IEntityTypeConfiguration<TrackerUser>
-    {
-        public void Configure(EntityTypeBuilder<TrackerUser> builder)
-        {
-            builder.Property(u => u.FName).HasMaxLength(100);
-            builder.Property(u => u.LName).HasMaxLength(100);
+    //public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
+    //{
+    //    public void Configure(EntityTypeBuilder<ApplicationUser> builder)
+    //    {
+    //        builder.Property(u => u.FName).HasMaxLength(100);
+    //        builder.Property(u => u.LName).HasMaxLength(100);
 
-        }
-    }
+    //    }
+    //}
 }

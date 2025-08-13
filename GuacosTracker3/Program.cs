@@ -5,6 +5,7 @@ using GuacosTracker3.Areas.Identity.Data;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
+using GuacosTracker3.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,7 @@ builder.Services.AddDbContext<TrackerDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-builder.Services.AddDefaultIdentity<TrackerUser>(options => options.SignIn.RequireConfirmedAccount = false) //used to check confirmation email
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false) //used to check confirmation email
     .AddEntityFrameworkStores<TrackerDbContext>();
 
 builder.Services.AddAuthentication(options =>
@@ -83,6 +84,7 @@ app.MapRazorPages();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<LoginMiddleware>();
 
 app.MapControllers();
 
