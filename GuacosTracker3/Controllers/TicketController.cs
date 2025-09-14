@@ -48,7 +48,6 @@ namespace GuacosTracker3.Controllers
             _configuration = configuration;
         }
 
-        // GET: Tickets
         public async Task<IActionResult> Index(int? pageNum)
         {
             if (_context.Ticket == null)
@@ -57,27 +56,33 @@ namespace GuacosTracker3.Controllers
                 return View();
             }
 
-            List<TicketViewModel> tickets = await _context.Ticket
-                .Where(t => !t.IsClosed)
-                .Join(_context.Customers, ticket => ticket.CustomerID,
-                    customer => customer.Id,
-                    (ticket, customer) => new TicketViewModel(ticket, customer.FName, customer.LName))
+            var tickets = await _context.Ticket
+                .Include(t => t.Customer)
+                .OrderByDescending(t => t.RecentChange)
+                .Select(t => new TicketIndexViewModel
+                {
+                    Id = t.Id,
+                    Status = t.CurrentStatus,
+                    CustomerName = t.Customer != null ? t.Customer.GetFullName() : "N/A",
+                    Title = t.Title,
+                    RecentChange = t.RecentChange,
+                })
                 .ToListAsync();
 
             int pageSize = 15;
 
             if (tickets == null || tickets.Count == 0)
             {
-                return View(PaginatedList<TicketViewModel>.CreatePagination(new List<TicketViewModel>(), pageNum ?? 1, pageSize));
+                return View(PaginatedList<TicketIndexViewModel>.CreatePagination(new List<TicketIndexViewModel>(), pageNum ?? 1, pageSize));
             }
 
-            List<TicketViewModel> groupedTickets = tickets
-                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Ticket.CurrentStatus])
+            var groupedTickets = tickets
+                .OrderBy(t => ProgressList.GetStatusOrderDict[t.Status])
                 //.ThenByDescending(t => t.Ticket.Priority)
-                .ThenBy(t => t.Ticket.RecentChange)
+                //.ThenBy(t => t.RecentChange)
                 .ToList();
 
-            return View(PaginatedList<TicketViewModel>.CreatePagination(groupedTickets, pageNum ?? 1, pageSize));
+            return View(PaginatedList<TicketIndexViewModel>.CreatePagination(groupedTickets, pageNum ?? 1, pageSize));
         }
 
         // GET: Tickets/Details/5
@@ -87,18 +92,11 @@ namespace GuacosTracker3.Controllers
         {
             Subtitle = "Details";
 
-            Ticket _ticket = await _context.Ticket.SingleOrDefaultAsync(t => t.Id == id);
+            Ticket _ticket = await _context.Ticket.Include(t => t.Customer).SingleOrDefaultAsync(t => t.Id == id);
 
             if (_ticket == null)
             {
-                return RedirectToAction("Index");
-            }
-
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.CustomerID);
-
-            if (_customers == null)
-            {
-                return RedirectToAction("Index");
+                return NotFound("Ticket not found");
             }
 
             List<Note> _notes = await _context.Notes.Where(c => c.TicketID == _ticket.Id).ToListAsync();
@@ -106,7 +104,7 @@ namespace GuacosTracker3.Controllers
             TicketNoteCustomerViewModel _ticketNotesViewModel = new()
             {
                 Ticket = _ticket,
-                Customer = _customers,
+                Customer = _ticket.Customer,
                 Note = new Note(),
                 Notes = _notes,
                 RecentNote = _notes.LastOrDefault() ?? null
@@ -119,20 +117,14 @@ namespace GuacosTracker3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(Guid id, [Bind("Ticket, Customer, Note, RecentNote")] TicketNoteCustomerViewModel _ticketViewModel)
         {
-            Ticket _ticket = await _context.Ticket.SingleOrDefaultAsync(t => t.Id == id);
+            Ticket _ticket = await _context.Ticket.Include(t => t.Customer).SingleOrDefaultAsync(t => t.Id == id);
             if (_ticket == null)
             {
                 return RedirectToAction("Index");
             }
 
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == _ticket.CustomerID);
-            if (_customers == null)
-            {
-                return RedirectToAction("Index");
-            }
-
             _ticketViewModel.Ticket = _ticket;
-            _ticketViewModel.Customer = _customers;
+            _ticketViewModel.Customer = _ticket.Customer;
 
             ModelState.Remove("Ticket");
             ModelState.Remove("Customer");
@@ -166,7 +158,7 @@ namespace GuacosTracker3.Controllers
                 TicketNoteCustomerViewModel _newTicketViewModel = new()
                 {
                     Ticket = _ticket,
-                    Customer = _customers,
+                    Customer = _ticket.Customer,
                     Note = new Note(),
                     Notes = _notes,
                     RecentNote = _recent_note
@@ -183,17 +175,17 @@ namespace GuacosTracker3.Controllers
         {
             Subtitle = "Create";
 
-            CreateTicketViewModel _createTicket = new();
-            if (customerID != null)
+            TicketCreateViewModel _createTicket = new();
+            if (customerID.HasValue)
             {
                 Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == customerID);
 
-                if (_customer == null)
+                if (_customer != null)
                 {
-                    return NotFound("customerID not found");
+                    _createTicket.CustomerID = customerID;
+                    _createTicket.CustomerName = _customer.GetFullName();
                 }
 
-                _createTicket = new CreateTicketViewModel(_customer.Id, "", _customer.FName, _customer.LName);
             }
 
             return View(_createTicket);
@@ -201,27 +193,39 @@ namespace GuacosTracker3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateTicketViewModel _ticketViewModel)
+        public async Task<IActionResult> Create(TicketCreateViewModel _ticketCreateViewModel)
         {
-            string apiurl = _configuration.GetValue<string>("AppSettings:apiurl");
-
-            if (_ticketViewModel.Ticket == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                CreateTicketViewModel _createTicketViewModel = new(_ticketViewModel.CustomerID ?? 2, _ticketViewModel.Description, _ticketViewModel.CustomerFName, _ticketViewModel.CustomerLName);
-                Subtitle = $"Create Ticket - {_ticketViewModel.CustomerFName}, {_ticketViewModel.CustomerLName}"; // fix later
-                return View(_createTicketViewModel);
+                Subtitle = $"Create Ticket - {_ticketCreateViewModel.CustomerName}"; // fix later
+                return View(_ticketCreateViewModel);
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                Ticket ticket = _ticketViewModel.Ticket;
-                ticket.CustomerID = _ticketViewModel.CustomerID ?? 1;
+                Customer customer = await _context.Customers.SingleOrDefaultAsync(c => c.Id == _ticketCreateViewModel.CustomerID);
+                if (customer == null)
+                {
+                    return View(_ticketCreateViewModel);
+                }
+
+                Ticket ticket = new(
+                    _ticketCreateViewModel.Title,
+                    "test",
+                    _ticketCreateViewModel.Status,
+                    customer
+                );
                 _context.Ticket.Add(ticket);
                 await _context.SaveChangesAsync();
 
-                Note note = new(ticket.Id, ticket.EmployeeID, _ticketViewModel.Description, ticket.CurrentStatus);
+                Note note = new(
+                    ticket.Id, 
+                    ticket.EmployeeID, 
+                    _ticketCreateViewModel.Description, 
+                    ticket.CurrentStatus
+                );
                 _context.Notes.Add(note);
                 await _context.SaveChangesAsync();
 
@@ -238,37 +242,33 @@ namespace GuacosTracker3.Controllers
 
         // GET: Tickets/Edit/5
         [Authorize(Roles = "Manager, Admin")]
-        public IActionResult Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id)
         {
             Subtitle = "Edit";
 
-            var ticket = _context.Ticket.Find(id);
-            if (ticket == null) return NotFound();
+            var ticket = await _context.Ticket.Include(t => t.Customer).SingleOrDefaultAsync(t => t.Id == id);
+            if (ticket == null) return NotFound("Ticket not found.");
 
-            var customer = _context.Customers.Find(ticket.CustomerID);
-            if (customer == null) return NotFound();
-
-            EditTicketViewModel editTicket = new EditTicketViewModel
+            EditTicketViewModel editTicket = new()
             {
                 Id = ticket.Id,
                 Title = ticket.Title,
-                CustomerID = ticket.CustomerID,
                 IsPriority = ticket.Priority,
                 IsClosed = ticket.IsClosed,
                 DateCreated = ticket.DateCreated,
-                Customer = customer.GetFullName(),
+                Customer = ticket.Customer.GetFullName(),
             };
             return View(editTicket);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(EditTicketViewModel editTicket)
+        public async Task<IActionResult> Edit(EditTicketViewModel editTicket)
         {
             if (!ModelState.IsValid) return View(editTicket);
             
-            var ticket = _context.Ticket.Find(editTicket.Id);
-            if (ticket == null) return NotFound();
+            var ticket = await _context.Ticket.SingleOrDefaultAsync(t => t.Id == editTicket.Id);
+            if (ticket == null) return NotFound("Ticket not found.");
 
             ticket.Title = editTicket.Title;
             ticket.Priority = editTicket.IsPriority;
@@ -286,7 +286,7 @@ namespace GuacosTracker3.Controllers
 
             _context.Add(note);
             _context.SaveChanges();
-            return RedirectToAction("Details", new {id = ticket.Id });
+            return RedirectToAction("Details", new {id = ticket.Id});
         }
 
         // POST: Tickets/Delete/5

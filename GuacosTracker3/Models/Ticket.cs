@@ -41,16 +41,17 @@ namespace GuacosTracker3.Models
         public DateTime RecentChange { get; set; } = DateTime.Now;
 
         //Relations
-        public int CustomerID { get; set; }
+        public Customer Customer { get; set; }
+        //public int CustomerID { get; set; }
 
         public Ticket() { }
 
-        public Ticket(string title, string employeeID, string status, int customerID)
+        public Ticket(string title, string employeeID, string status, Customer customer)
         {
             Title = title;
             EmployeeID = employeeID;
             CurrentStatus = status;
-            CustomerID = customerID;
+            Customer = customer;
         }
     }
 }
