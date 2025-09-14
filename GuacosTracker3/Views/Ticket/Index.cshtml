@@ -1,115 +1,147 @@
 ﻿@using GuacosTracker3.SharedData
-@model List<TicketViewModel>
+@using static GuacosTracker3.Utilities.Pagination
+@model PaginatedList<GuacosTracker3.Models.ViewModels.TicketIndexViewModel>
 
-@{
-    ViewData["Title"] = "Index";
-}
+<div class="row my-3">
+    <div class="col d-flex justify-content-between">
+        <div class="my-auto">
+            <a asp-controller="Ticket" asp-action="Create">Create New</a>
+        </div>
 
-
-
-<div id="ticket-index-header">
-    <h1 class="text-center pb-5">Active Tickets</h1>
-
-    <div class="d-flex justify-content-between">
-        <p>
-            <a asp-controller="Customer" asp-action="Index">Create New</a>
-        </p>
-
-        <div class="d-flex">
-            <div class="col input-group-sm">
-                <label for="list-max">Results per page:</label>
-                <select name="list-max" class="form-control" id="dl-page-load">
+        <div class="d-none gap-3">
+            <div class="d-flex text-nowrap align-items-center gap-2">
+                <label class="form-label d-inline" for="list-max">Results per page</label>
+                <select name="list-max" class="form-select" id="dl-page-load">
                     <option value="1">1</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
                     <option value="20">20</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
-
                 </select>
             </div>
 
-            <div class="col input-group-sm">
-                <label for="show-hidden">Show Hidden:</label>
-                <input type="checkbox" class="form-control" id="show-hidden" value="true" />
+            <div class="d-flex text-nowrap align-items-center gap-2">
+                <label class="form-label" for="show-hidden">Show Hidden</label>
+                <input type="checkbox" class="form-check" id="show-hidden" value="true" />
             </div>
         </div>
     </div>
 </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Status
-            </th>
-            <th>
-                Customer
-            </th>
-            <th>
-                Title
-            </th>
-            <th>
-                Date
-            </th>
-            <th>
-                Employee ID
-            </th>
-
-            <th>
-                Priority
-            </th>
-            <th>
-                Actions
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (TicketViewModel item in Model)
-        {
-            <tr class="@ProgressList.BgColor(item.Ticket.RecentStatus)">
-                <td>
-                    @Html.DisplayFor(Model => item.Ticket.RecentStatus)
-                </td>
-                <td>
-                    @Html.DisplayFor(Model => item.Customer.FName)
-                    @Html.DisplayFor(Model => item.Customer.LName)
-                </td>
-                <td>
-                    @Html.DisplayFor(Model => item.Ticket.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(Model => item.Ticket.RecentChange)
-                </td>
-
-
-                <td>
-                    @Html.DisplayFor(Model => item.Ticket.EmployeeId)
-                </td>
-
-                <td>
-                    @Html.DisplayFor(Model => item.Ticket.Priority)
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Ticket.Id" class="btnx"><i class="mdi mdi-information-outline p-1"></i></a>
-                    @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
-                    @if (User.IsInRole("Admin"))
+<div class="row my-3">
+    <div class="col table-responsive">
+        <table class="table text-nowrapx">
+            <thead>
+                <tr>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Customer
+                    </th>
+                    <th>
+                        Title
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Priority
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null){
+                    <tr>
+                        <td colspan="6">No tickets!</td>
+                    </tr>
+                } else {
+                    @foreach (var item in Model)
                     {
-                        <a asp-action="Edit" asp-route-id="@item.Ticket.Id" class="btnx"><i class="mdi mdi-pencil-box-outline p-1"></i></a>
-
-                        <form asp-route-id="@item.Ticket.Id" asp-action="Delete" class="d-inline p-1">
-                            <button class="text-danger"><i class="mdi mdi-trash-can-outline"></i></button>
-                        </form>
+                        <tr class="@ProgressList.BgColor(item.Status)">
+                            <td>
+                                @item.Status
+                            </td>
+                            <td>
+                                @item.CustomerName
+                            </td>
+                            <td>
+                                @item.Title
+                            </td>
+                            <td>
+                                @item.RecentChange
+                            </td>
+                            <td>
+                                <input type="checkbox" class="form-check-input mx-auto" disabled />
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btnx">Details</a>
+                                
+                                @*Deletes the Ticket, highly do not recommend, might be locked for admins only*@
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <span>|</span>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                    <span>|</span>
+                                    <form asp-route-id="@item.Id" asp-action="Delete" class="d-inline p-1">
+                                        <button class="text-danger">Delete</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <a class="btn" title="Higher Permissions Required"><i class="mdi mdi-pencil-box-outline d-inline opacity-25 p-1"></i></a>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                        <a class="btn" title="Higher Permissions Required"><i class="mdi mdi-trash-can-outline d-inline opacity-25 p-1"></i></a>
-                    }
-
-                </td>
-            </tr>
+<div class="row my-3">
+    <div class="col d-flex justify-content-around">
+        @{
+            string hasPreviousPage = !Model.HasPreviousPage ? "disabled" : "";
+            string hasNextPage = !Model.HasNextPage ? "disabled" : "";
         }
-    </tbody>
-</table>
+        <div>
+            <a asp-action="Index"
+               asp-route-pageNum="1"
+               class="btn btn-default @hasPreviousPage">
+                &lt; &lt;
+            </a>
+
+            <a asp-action="Index"
+               asp-route-pageNum="@(Model.PageIndex - 1)"
+               class="btn btn-default @hasPreviousPage">
+                Previous
+            </a>
+        </div>
+
+        <div class="my-auto">
+            <span class="my-auto">Page</span>
+
+            <span>@Model.PageIndex</span>
+
+            <span>of</span>
+
+            <span>@Model.TotalPages</span>
+        </div>
+
+        <div>
+            <a asp-action="Index"
+               asp-route-pageNum="@(Model.PageIndex + 1)"
+               class="btn btn-default @hasNextPage">
+                Next
+            </a>
+
+            <a asp-action="Index"
+               asp-route-pageNum="@(Model.TotalPages)"
+               class="btn btn-default @hasNextPage">
+                &gt; &gt;
+            </a>
+        </div>
+    </div>
+</div>

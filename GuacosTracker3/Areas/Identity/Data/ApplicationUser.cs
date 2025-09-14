@@ -8,14 +8,12 @@ using Microsoft.AspNetCore.Identity;
 namespace GuacosTracker3.Areas.Identity.Data;
 
 // Add profile data for application users by adding properties to the TrackerUser class
-public class TrackerUser : IdentityUser
+public class ApplicationUser : IdentityUser
 {
-    [PersonalData]
-    [Column(TypeName = "nvarchar(100)")]
-    public string FName { get; set; }
-
-    [PersonalData]
-    [Column(TypeName = "nvarchar(100)")]
-    public string LName { get; set; }
+    public int Id { get; set; }
+    public string Auth0Id { get; set; }
+    public string? FName { get; set; }
+    public string? LName { get; set; }
+    public DateTime CreatedAt { get; set; }
 }
 

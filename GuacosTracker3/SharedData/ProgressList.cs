@@ -19,6 +19,15 @@ namespace GuacosTracker3.SharedData
             {"Unrepairable", "table-danger" }
         };
 
+        private static readonly Dictionary<string, string> StatusColors = new()
+        {
+            {"Awaiting Repair", "warning" },
+            {"In-Progress", "active" },
+            {"Awaiting Customer", "warning" },
+            {"Completed", "success" },
+            {"Unrepairable", "danger" }
+        };
+
         public static List<SelectListItem> GetStatusList()
         {
             return new List<SelectListItem>
@@ -49,6 +58,15 @@ namespace GuacosTracker3.SharedData
                 "Unrepairable"
         };
 
+        public static readonly Dictionary<string, int> GetStatusOrderDict = new()
+        {
+            {"Completed", 1},
+            {"Unrepairable", 2},
+            {"Awaiting Repair", 3},
+            {"Awaiting Customer", 4},
+            {"In-Progress", 5},
+        };
+
         public static string BgColor(string Status)
         {
             if (!StatusStrings.ContainsKey(Status))
@@ -57,6 +75,21 @@ namespace GuacosTracker3.SharedData
             }
 
             return StatusStrings[Status];
+        }
+
+        public static string GetColor(string? Status)
+        {
+            if (Status == null)
+            {
+                return "-light";
+            }
+
+            if (!StatusColors.ContainsKey(Status))
+            {
+                return "-light";
+            }
+
+            return StatusColors[Status];
         }
     }
 }

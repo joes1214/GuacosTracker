@@ -43,5 +43,12 @@ namespace GuacosTracker3.Models
         [MaxLength(100, ErrorMessage = "Too many characters! Max 100.")]
         public string? Email { get; set; }
 
+        public ICollection<Ticket>? Tickets { get; set; }
+
+        public string GetFullName()
+        {
+            return $"{LName}, {FName}";
+        }
+
     }
 }

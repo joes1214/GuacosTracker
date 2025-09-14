@@ -10,6 +10,8 @@ using GuacosTracker3.Data;
 using GuacosTracker3.Models.ViewModels;
 using GuacosTracker3.SharedData;
 using Microsoft.AspNetCore.Authorization;
+using System.Reflection;
+using static GuacosTracker3.Utilities.Pagination;
 
 namespace GuacosTracker3.Controllers
 {
@@ -17,6 +19,29 @@ namespace GuacosTracker3.Controllers
     public class CustomerController : Controller
     {
         private readonly TrackerDbContext _context;
+        private string _title = "Customers";
+        private string _subtitle = "";
+
+        [ViewData]
+        public string Page
+        {
+            get {
+                if (_subtitle != "")
+                {
+                    string title = string.Format("{0} - {1}", _title, _subtitle);
+                    return title;
+                }
+                return _title;
+            }
+
+            set { _title = value; }
+        }
+
+        public string Subtitle
+        {
+            get { return _subtitle; }
+            set { _subtitle = value; }
+        }
 
         public CustomerController(TrackerDbContext context)
         {
@@ -24,42 +49,47 @@ namespace GuacosTracker3.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNum)
         {
-              return _context.Customers != null ? 
-                          View(await _context.Customers.ToListAsync()) :
-                          Problem("Entity set 'TrackerDbContext.Customers'  is null.");
+            List<Customer> customerList = await _context.Customers.ToListAsync();
+
+            int pageSize = 15;
+
+            return View(PaginatedList<Customer>.CreatePagination(customerList, pageNum ?? 1, pageSize));
         }
 
         // GET: Customers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? pageNum)
         {
+            Subtitle = "Details";
             if (id == null)
             {
                 return NotFound();
             }
 
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+            Customer _customer = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (_customers == null)
+            if (_customer == null)
             {
                 return NotFound();
             }
 
-            TicketViewModel _ticketViewModel = new TicketViewModel();
+            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer.Id == _customer.Id).OrderByDescending(f => f.RecentChange).ToListAsync();
 
-            _ticketViewModel.Customer = _customers;
+            int pageSize = 10;
+            CustomerTicketDetails CustomerDetails = new()
+            {
+                Customer = _customer,
+                Tickets = PaginatedList<Ticket>.CreatePagination(tickets, pageNum ?? 1, pageSize),
+            };
 
-            List<Ticket> tickets = await _context.Ticket.Where(c => c.Customer == _customers.Id).ToListAsync();
-
-            _ticketViewModel.Tickets = tickets;
-
-            return View(_ticketViewModel);
+            return View(CustomerDetails);
         }
 
         // GET: Customers/Create
         public IActionResult Create()
         {
+            Subtitle = "Create";
             return View();
         }
 
@@ -79,62 +109,10 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
-        public async Task<IActionResult> CreateTicket(int? id)
-        {
-            if(id == null)
-            {
-                return NotFound();
-            }
-
-            Customer _customers = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
-
-            if (_customers == null)
-            {
-                return RedirectToAction("Index");
-            }
-
-            TicketViewModel _ticketViewModel = new TicketViewModel();
-
-            _ticketViewModel.Customer = _customers;
-            //_ticketViewModel.StatusItemList = ProgressList.GetStatusList();
-
-            List<Ticket> tickets = new List<Ticket>();
-
-            return View(_ticketViewModel);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTicket([Bind("Ticket, Customer, Tickets")] TicketViewModel _ticketViewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                Ticket ticket = new();
-
-                ticket.Title = _ticketViewModel.Ticket.Title;
-                ticket.EmployeeId = _ticketViewModel.Ticket.EmployeeId; //Find how to grab through Auth
-                ticket.Description = _ticketViewModel.Ticket.Description;
-                ticket.Status = _ticketViewModel.Ticket.Status;
-                ticket.Priority = _ticketViewModel.Ticket.Priority;
-                ticket.Customer = _ticketViewModel.Ticket.Customer;
-                ticket.Date = DateTime.Now;
-                ticket.RecentStatus = _ticketViewModel.Ticket.Status;
-
-                _context.Ticket.Add(ticket);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(controllerName: "Ticket", actionName: "Index");
-
-            } else
-            {
-                return RedirectToAction("Index");
-            }
-
-        }
-
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Subtitle = "Edit";
             if (id == null || _context.Customers == null)
             {
                 return NotFound();
@@ -216,14 +194,37 @@ namespace GuacosTracker3.Controllers
             {
                 _context.Customers.Remove(customers);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CustomersExists(int id)
         {
-          return (_context.Customers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Customers?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("[controller]/Customer", Name="Get_Customer")]
+        public JsonResult Get([FromQuery(Name= "lname")] string? lname, [FromQuery(Name = "fname")] string? fname)
+        {
+            lname ??= string.Empty;
+            fname ??= string.Empty;            
+
+            var customers = _context.Customers
+                .Where(c => c.LName.Contains(lname))
+                .Where(c => c.FName.Contains(fname))
+                .Select(c => new
+                {
+                    c.Id,
+                    c.FName,
+                    c.LName,
+                    c.Phone,
+                    c.Email,
+                })
+                .Take(10)
+                .ToList();
+
+            return Json(customers);
         }
     }
 }

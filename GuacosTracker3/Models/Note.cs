@@ -15,12 +15,12 @@ namespace GuacosTracker3.Models
         [Required]
         [ForeignKey("Tickets")]
         [Display(Name = "Ticket ID")]
-        public Guid TicketId { get; set; }
+        public Guid TicketID { get; set; }
 
         [Required]
         [ForeignKey("Employee")]
         [Display(Name = "Employee ID")]
-        public string EmployeeId { get; set; }
+        public string EmployeeID { get; set; }
 
         [Required]
         [Column(TypeName = "nvarchar(MAX)")]
@@ -36,5 +36,15 @@ namespace GuacosTracker3.Models
 
         [Required]
         public DateTime Date { get; set; } = DateTime.Now;
+
+        public Note() { }
+
+        public Note(Guid ticketID, string employeeID, string description, string status)
+        {
+            TicketID = ticketID;
+            EmployeeID = employeeID;
+            Description = description;
+            Status = status;
+        }
     }
 }

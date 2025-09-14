@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["currentController"] = ViewContext.RouteData.Values["controller"]?.ToString();
+    ViewData["Page"] = ViewData["page"]?.ToString();
 }
 
 <!DOCTYPE html>
@@ -7,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GuacosTracker3</title>
+    <title>@ViewData["Page"]</title>
     <meta name="theme-name" content="mono" />
 
     <link href="https://fonts.googleapis.com/css?family=Karla:400,700|Roboto" rel="stylesheet">
@@ -25,15 +26,13 @@
         <div class="page-wrapper">
             <header class="main-header" id="header">
                 <nav class="navbar navbar-expand-lg navbar-light px-3" id="navbar">
-                    <span class="page-title">dashboard</span>
+                    <h1 class="page-title">@ViewData["Page"]</h1>
                 </nav>
             </header>
 
-            <div class="content">
-                <main role="main" class="pb-3">
-                    @RenderBody()
-                </main>
-            </div>
+            <main role="main" class="container my-3">
+                @RenderBody()
+            </main>
 
             <footer class="footer mt-auto">
                 <div class="copyright bg-white">
@@ -50,7 +49,6 @@
         document.getElementById("copy-year").textContent = year;
     </script>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
