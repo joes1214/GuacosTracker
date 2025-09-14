@@ -28,12 +28,6 @@ namespace GuacosTracker3.Middleware
 
             try
             {
-                Console.WriteLine("=== ALL CLAIMS ===");
-                foreach (var claim in context.User.Claims)
-                {
-                    Console.WriteLine($"{claim.Type}: {claim.Value}");
-                }
-                Console.WriteLine("=================");
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var email = context.User.FindFirst("email")?.Value;
                 var name = context.User.FindFirst("nickname")?.Value;
