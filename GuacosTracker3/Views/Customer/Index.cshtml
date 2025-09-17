@@ -12,45 +12,25 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>
-                        First
-                    </th>
-                    <th>
-                        Last
-                    </th>
-                    <th>
-                        Phone #
-                    </th>
-                    <th>
-                        Alt. Phone #
-                    </th>
-                    <th>
-                        Email
-                    </th>
-                    <th colspan="2">Actions</th>
+                    <th>First</th>
+                    <th>Last</th>
+                    <th>Phone #</th>
+                    <th>Alt. Phone #</th>
+                    <th>Email</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td>@item.FName</td>
+                        <td>@item.LName</td>
+                        <td>@item.Phone</td>
+                        <td>@item.AltPhone</td>
+                        <td>@item.Email</td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.FName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.LName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Phone)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.AltPhone)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Email)
-                        </td>
-                        <td colspan="2">
-                            <a asp-action="CreateTicket" asp-route-id="@item.Id" type="submit">Create</a>
+                            <a asp-controller="Ticket" asp-action="Create" asp-route-customerID="@item.Id" type="submit">Create Ticket</a>
                             |
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                             |

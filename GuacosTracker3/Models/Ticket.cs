@@ -1,4 +1,5 @@
 ﻿using GuacosTracker3.SharedData;
+using GuacosTracker3.Models.ViewModels;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;

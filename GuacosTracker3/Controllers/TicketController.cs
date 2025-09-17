@@ -85,9 +85,8 @@ namespace GuacosTracker3.Controllers
             return View(PaginatedList<TicketIndexViewModel>.CreatePagination(groupedTickets, pageNum ?? 1, pageSize));
         }
 
-        // GET: Tickets/Details/5
         [HttpGet]
-        [Route("[controller]/[action]/{id:guid}")]
+        [Route("[controller]/{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
             Subtitle = "Details";
@@ -240,8 +239,8 @@ namespace GuacosTracker3.Controllers
             }
         }
 
-        // GET: Tickets/Edit/5
         [Authorize(Roles = "Manager, Admin")]
+        [Route("[controller]/{id:guid}/[action]/")]
         public async Task<IActionResult> Edit(Guid id)
         {
             Subtitle = "Edit";
@@ -289,10 +288,10 @@ namespace GuacosTracker3.Controllers
             return RedirectToAction("Details", new {id = ticket.Id});
         }
 
-        // POST: Tickets/Delete/5
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("[controller]/{id:guid}/delete")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.Ticket== null)
