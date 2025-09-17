@@ -48,7 +48,7 @@ namespace GuacosTracker3.Controllers
             _context = context;
         }
 
-        // GET: Customers
+        [Route("[controller]/")]
         public async Task<IActionResult> Index(int? pageNum)
         {
             List<Customer> customerList = await _context.Customers.ToListAsync();
@@ -58,7 +58,7 @@ namespace GuacosTracker3.Controllers
             return View(PaginatedList<Customer>.CreatePagination(customerList, pageNum ?? 1, pageSize));
         }
 
-        // GET: Customers/Details/5
+        [Route("[controller]/{id:int}")]
         public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             Subtitle = "Details";
@@ -86,16 +86,13 @@ namespace GuacosTracker3.Controllers
             return View(CustomerDetails);
         }
 
-        // GET: Customers/Create
+        [Route("[controller]/[action]/")]
         public IActionResult Create()
         {
             Subtitle = "Create";
             return View();
         }
 
-        // POST: Customers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customer customers)
@@ -109,7 +106,7 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
-        // GET: Customers/Edit/5
+        [Route("[controller]/{id:int}/[action]/")]
         public async Task<IActionResult> Edit(int? id)
         {
             Subtitle = "Edit";
@@ -126,9 +123,6 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
-        // POST: Customers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,FName,LName,Address,Phone,AltPhone,Email")] Customer customers)
@@ -162,7 +156,6 @@ namespace GuacosTracker3.Controllers
         }
 
         [Authorize(Roles = "Manager, Admin")]
-        // GET: Customers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Customers == null)
@@ -180,7 +173,6 @@ namespace GuacosTracker3.Controllers
             return View(customers);
         }
 
-        // POST: Customers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

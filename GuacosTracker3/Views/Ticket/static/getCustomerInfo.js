@@ -38,7 +38,6 @@ function getCustomers(url) {
 
 function isCustomerSelected() {
     const customerID = document.getElementById('CustomerID').value;
-    console.log(customerID)
     //const customerFName = document.getElementById('CustomerFName').value;
     //const customerLName = document.getElementById('CustomerLName').value;
 

@@ -47,7 +47,7 @@ namespace GuacosTracker3.Models
 
         public string GetFullName()
         {
-            return $"{LName}, {FName}";
+            return $"{FName} {LName}";
         }
 
     }

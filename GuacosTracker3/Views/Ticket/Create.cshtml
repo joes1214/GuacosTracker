@@ -3,8 +3,6 @@
 
 <div class="row my-3">
     <div class="col">
-        <div class="form-group text-danger">(*) Required</div>
-
         <div id="customer-search-container">
             <details id="customer-details">
                 <summary>Customer information</summary>
@@ -20,15 +18,17 @@
 
         <hr>
 
-        <div class="my-2">
+        <div class="my-3">
             @if(Model.CustomerID != null){
-                <h3>Customer selected: @Model.CustomerName</h3>
+                <h2>Customer selected</h2>
+                <span>@Model.CustomerName</span>
             } else {
-                <h3>No customer selected</h3>
+                <h2>No customer selected</h2>
             }
         </div>
 
         <form asp-action="Create">
+            <div class="form-group text-danger">(*) Required</div>
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <input type="hidden" asp-for="@Model.CustomerID"/>
